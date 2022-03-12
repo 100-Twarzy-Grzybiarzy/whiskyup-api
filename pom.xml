@@ -18,7 +18,6 @@
         <java.version>11</java.version>
         <io.swagger.version>1.6.2</io.swagger.version>
         <javax.validation.version>2.0.1.Final</javax.validation.version>
-        <io.springfox.version>3.0.0</io.springfox.version>
         <org.openapitools.version>0.2.1</org.openapitools.version>
         <lombok.version>1.18.2</lombok.version>
     </properties>

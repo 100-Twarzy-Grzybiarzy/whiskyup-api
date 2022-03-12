@@ -1,0 +1,17 @@
+version: '3.7'
+services:
+  application:
+    image: whiskyup
+  localstack:
+    image: localstack/localstack
+    ports:
+      - '4566:4566'
+    environment:
+      - SERVICES=sqs,dynamodb
+      - AWS_DEFAULT_REGION=eu-central-1
+      - EDGE_PORT=4566
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - HOSTNAME_EXTERNAL=localstack
+      - LAMBDA_DOCKER_NETWORK=application
+    volumes:
+      - '${TMPDIR:-/tmp/localstack}:/tmp/localstack'
