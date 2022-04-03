@@ -40,6 +40,43 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WhiskiesFindResult'
+  /user/whisky:
+    get:
+      summary: Get whiskies
+      parameters:
+        - name: sort
+          in: query
+          required: false
+          schema:
+            type: string
+            default: 'name'
+        - name: order
+          in: query
+          required: false
+          schema:
+            type: string
+            default: 'desc'
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
+            default: 50
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WhiskiesFindResult'
     post:
       summary: Add whisky
       requestBody:
@@ -105,3 +142,19 @@ components:
         price:
           type: number
           format: double
+    User:
+      type: object
+      required:
+        - email
+        - name
+        - lastname
+        - distillery
+      properties:
+        email:
+          type: string
+        name:
+          type: string
+        lastname:
+          type: string
+        distillery:
+          type: string
