@@ -6,6 +6,7 @@ paths:
   /whisky:
     get:
       summary: Get whiskies
+      operationId: getWhiskies
       parameters:
         - name: exclusiveStartKey
           in: query

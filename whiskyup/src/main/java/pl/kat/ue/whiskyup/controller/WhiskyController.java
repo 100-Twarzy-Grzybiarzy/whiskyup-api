@@ -1,7 +1,9 @@
 package pl.kat.ue.whiskyup.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import pl.kat.ue.whiskyup.model.WhiskiesFindResultApi;
 import pl.kat.ue.whiskyup.model.WhiskyApi;
 import pl.kat.ue.whiskyup.service.WhiskyService;
@@ -11,18 +13,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/whisky")
 @RequiredArgsConstructor
-public class WhiskyController {
+public class WhiskyController implements pl.kat.ue.whiskyup.api.WhiskyApi {
 
     private final WhiskyService whiskyService;
 
-    @GetMapping
-    public WhiskiesFindResultApi getWhiskies(@RequestParam(required = false) String exclusiveStartKey) {
+    @Override
+    public ResponseEntity<WhiskiesFindResultApi> getWhiskies(String exclusiveStartKey) {
         List<WhiskyApi> whiskies = whiskyService.getWhiskies(exclusiveStartKey);
-        return new WhiskiesFindResultApi().results(whiskies);
-    }
-
-    @PostMapping
-    public WhiskyApi addWhisky(@RequestBody WhiskyApi whiskyApi) {
-        return whiskyService.addWhisky(whiskyApi);
+        return ResponseEntity.ok(new WhiskiesFindResultApi().results(whiskies));
     }
 }

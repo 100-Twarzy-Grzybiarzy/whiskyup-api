@@ -8,6 +8,7 @@ variable "hash_key" {
 
 variable "range_key" {
   type = string
+  default = null
 }
 
 variable "attributes" {

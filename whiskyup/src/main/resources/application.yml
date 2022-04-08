@@ -1,0 +1,26 @@
+server:
+  port: 8080
+spring:
+  application.name: whiskyup
+cloud:
+  aws:
+    stack:
+      auto: false
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: local
+cloud:
+  aws:
+    stack:
+      auto: false
+    region:
+      static: eu-central-1
+    end-point:
+      uri: http://localstack:4566
+    dynamodb:
+      table:
+        whisky: whiskyup_local_whisky

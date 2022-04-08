@@ -8,16 +8,11 @@ module "whisky_table" {
   source = "../modules/dynamodb_table"
 
   name      = "${var.prefix}_whisky"
-  hash_key  = "id"
-  range_key = "name"
+  hash_key  = "url"
 
   attributes = [
     {
-      name = "id"
-      type = "S"
-    },
-    {
-      name = "name"
+      name = "url"
       type = "S"
     }
   ]

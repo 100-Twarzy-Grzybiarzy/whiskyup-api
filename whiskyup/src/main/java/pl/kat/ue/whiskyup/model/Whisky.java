@@ -1,7 +1,15 @@
 package pl.kat.ue.whiskyup.model;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
+
 import java.util.Set;
 
+@NoArgsConstructor
+@AllArgsConstructor
+@DynamoDbBean
 public class Whisky {
 
     private String url;
@@ -22,4 +30,12 @@ public class Whisky {
     private String price;
     private Set<String> tags;
 
+    @DynamoDbPartitionKey
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
 }
