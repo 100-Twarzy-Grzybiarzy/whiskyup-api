@@ -23,6 +23,7 @@
         <amazon.awssdk.version>2.17.166</amazon.awssdk.version>
         <org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
         <io.springfox.version>3.0.0</io.springfox.version>
+        <io.jsonwebtoken.version>0.9.1</io.jsonwebtoken.version>
     </properties>
 
     <dependencyManagement>
@@ -73,11 +74,18 @@
             <artifactId>validation-api</artifactId>
             <version>${javax.validation.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
             <version>${org.mapstruct.version}</version>
         </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+            <version>${io.jsonwebtoken.version}</version>
+        </dependency>
+
 
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
