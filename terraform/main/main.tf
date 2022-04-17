@@ -4,15 +4,15 @@ module "iam" {
   tags   = var.tags
 }
 
-module "whisky_table" {
+module "whiskybase_table" {
   source = "../modules/dynamodb_table"
 
-  name      = "${var.prefix}_whisky"
-  hash_key  = "url"
+  name          = "WhiskyBase"
+  partition_key = "WhiskyUrl"
 
   attributes = [
     {
-      name = "url"
+      name = "WhiskyUrl"
       type = "S"
     }
   ]

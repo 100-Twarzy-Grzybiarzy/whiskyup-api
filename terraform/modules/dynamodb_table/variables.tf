@@ -2,12 +2,12 @@ variable "name" {
   type = string
 }
 
-variable "hash_key" {
+variable "partition_key" {
   type = string
 }
 
-variable "range_key" {
-  type = string
+variable "sort_key" {
+  type    = string
   default = null
 }
 
