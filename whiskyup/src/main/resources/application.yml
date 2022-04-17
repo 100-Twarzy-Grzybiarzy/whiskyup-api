@@ -6,6 +6,13 @@ cloud:
   aws:
     stack:
       auto: false
+    dynamodb:
+      table:
+        whisky: WhiskyBase
+jwt:
+  secret:
+    mock: mockSecretJwtKeyUsedWithHs512MustHaveSizeEqualOrGraterThan512BitsmockSecretJwtKeyUsedWithHs512MustHaveSizeEqualOrGraterThan512Bits
+    key: ${JWT_SECRET_KEY:${jwt.secret.mock}}
 
 ---
 
@@ -21,6 +28,3 @@ cloud:
       static: eu-central-1
     end-point:
       uri: http://localstack:4566
-    dynamodb:
-      table:
-        whisky: whiskyup_local_whisky

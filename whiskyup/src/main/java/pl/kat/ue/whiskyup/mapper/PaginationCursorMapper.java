@@ -9,6 +9,7 @@ import pl.kat.ue.whiskyup.utils.JwtManager;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
@@ -19,25 +20,41 @@ public class PaginationCursorMapper {
     private final ObjectMapper objectMapper;
     private final JwtManager jwtManager;
 
-    public Map<String, AttributeValue> mapFromCursor(String paginationCursor) throws JsonProcessingException {
-        String decoded = jwtManager.parseJwt(paginationCursor);
-        Map<String, String> lastEvaluatedKey = objectMapper.readValue(decoded, new TypeReference<>() {});
-        return deserialize(lastEvaluatedKey);
+    public Map<String, AttributeValue> mapFromCursor(String paginationCursor) {
+        if (paginationCursor.equals("null")) {
+            return null;
+        } try {
+            String decoded = jwtManager.parseJwt(paginationCursor);
+            Map<String, String> lastEvaluatedKey = objectMapper.readValue(decoded, new TypeReference<>() {});
+            return deserialize(lastEvaluatedKey);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private Map<String, AttributeValue> deserialize(Map<String, String> lastEvaluatedKey) {
         return lastEvaluatedKey.entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, e -> pojoMapper.deserialize(e.getValue(), AttributeValue.serializableBuilderClass())));
+                .collect(Collectors.toMap(Map.Entry::getKey,
+                        e -> pojoMapper.deserialize(e.getValue(), AttributeValue.serializableBuilderClass()))
+                );
     }
 
-    public String mapToCursor(Map<String, AttributeValue> lastEvaluatedKey) throws JsonProcessingException {
-        Map<String, String> serialized = serialize(lastEvaluatedKey);
-        String paginationCursor = objectMapper.writeValueAsString(serialized);
-        return jwtManager.buildJwt(paginationCursor);
+    public String mapToCursor(Map<String, AttributeValue> lastEvaluatedKey) {
+        if (Objects.isNull(lastEvaluatedKey)) {
+            return null;
+        } try {
+            Map<String, String> serialized = serialize(lastEvaluatedKey);
+            String paginationCursor = objectMapper.writeValueAsString(serialized);
+            return jwtManager.buildJwt(paginationCursor);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private Map<String, String> serialize(Map<String, AttributeValue> lastEvaluatedKey) {
         return lastEvaluatedKey.entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, e -> pojoMapper.serialize(e.getValue())));
+                .collect(Collectors.toMap(Map.Entry::getKey,
+                        e -> pojoMapper.serialize(e.getValue()))
+                );
     }
 }
