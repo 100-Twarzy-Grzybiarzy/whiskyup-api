@@ -8,7 +8,7 @@ import pl.kat.ue.whiskyup.model.WhiskyApi;
 @Mapper(componentModel = "spring")
 public interface WhiskyMapper {
 
-    String PREFIX = pl.kat.ue.whiskyup.model.Whisky.PK_PREFIX;
+    String PREFIX = Whisky.PK_PREFIX;
 
     @Mapping(target = "url", expression = "java( PREFIX + whiskyApi.getUrl() )")
     Whisky mapApiToModel(WhiskyApi whiskyApi);

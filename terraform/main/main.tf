@@ -20,6 +20,26 @@ module "whiskybase_table" {
   tags = var.tags
 }
 
+module "user_table" {
+  source = "../modules/dynamodb_table"
+
+  name          = "User"
+  partition_key = "PK"
+  sort_key      = "SK"
+
+  attributes = [
+    {
+      name = "PK"
+      type = "S"
+    }, {
+      name = "SK"
+      type = "S"
+    }
+  ]
+
+  tags = var.tags
+}
+
 module "new_whisky_queue" {
   source = "../modules/sqs_queue"
   name   = "${var.prefix}_new_whisky"

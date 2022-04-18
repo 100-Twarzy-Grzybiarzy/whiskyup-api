@@ -39,7 +39,7 @@ class PaginationCursorMapperTest {
     @Test
     void shouldReturnNullWhenPaginationCursorIsNull() {
         //given
-        String paginationCursor = "null";
+        String paginationCursor = null;
 
         //when
         Map<String, AttributeValue> actual = mapper.mapFromCursor(paginationCursor);

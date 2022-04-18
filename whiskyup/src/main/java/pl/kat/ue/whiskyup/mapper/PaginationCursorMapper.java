@@ -21,7 +21,7 @@ public class PaginationCursorMapper {
     private final JwtManager jwtManager;
 
     public Map<String, AttributeValue> mapFromCursor(String paginationCursor) {
-        if (paginationCursor.equals("null")) {
+        if (Objects.isNull(paginationCursor)) {
             return null;
         } try {
             String decoded = jwtManager.parseJwt(paginationCursor);

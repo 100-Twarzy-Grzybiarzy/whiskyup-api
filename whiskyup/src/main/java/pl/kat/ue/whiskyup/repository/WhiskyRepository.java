@@ -16,7 +16,7 @@ public class WhiskyRepository {
 
     private final DynamoDbTable<Whisky> whiskyTable;
 
-    public WhiskyRepository(@Value("${cloud.aws.dynamodb.table.whisky:}") String name,
+    public WhiskyRepository(@Value("${cloud.aws.dynamodb.table.whisky-base}") String name,
                             DynamoDbEnhancedClient dynamoDbClient) {
 
         this.whiskyTable = dynamoDbClient.table(name, TableSchema.fromBean(Whisky.class));

@@ -8,7 +8,8 @@ cloud:
       auto: false
     dynamodb:
       table:
-        whisky: WhiskyBase
+        whisky-base: WhiskyBase
+        user: User
 jwt:
   secret:
     mock: mockSecretJwtKeyUsedWithHs512MustHaveSizeEqualOrGraterThan512BitsmockSecretJwtKeyUsedWithHs512MustHaveSizeEqualOrGraterThan512Bits
