@@ -22,25 +22,25 @@ public class UserService {
     private final UserMapper userMapper;
     private final PaginationCursorMapper paginationCursorMapper;
 
-    public UserApi addUser(UserApi userApi) {
-        User newUser = userMapper.mapApiToNewModel(userApi);
+    public UserDto addUser(UserDto userDto) {
+        User newUser = userMapper.mapDtoToNewModel(userDto);
         User created = userRepository.addUser(newUser);
-        return userMapper.mapModelToApi(created);
+        return userMapper.mapModelToDto(created);
     }
 
-    public UserWhiskiesFindResultApi getUserWhiskies(String userId, String paginationCursor) {
+    public UserWhiskiesFindResultDto getUserWhiskies(String userId, String paginationCursor) {
         Map<String, AttributeValue> exclusiveStartKey = paginationCursorMapper.mapFromCursor(paginationCursor);
         Page<UserWhisky> page = userRepository.getAllUserWhiskies(userId, exclusiveStartKey);
-        return new UserWhiskiesFindResultApi()
+        return new UserWhiskiesFindResultDto()
                 .results(page.items().stream()
-                        .map(userWhiskyMapper::mapModelToApi)
+                        .map(userWhiskyMapper::mapModelToDto)
                         .collect(Collectors.toList()))
                 .exclusiveStartKey(paginationCursorMapper.mapToCursor(page.lastEvaluatedKey()));
     }
 
-    public UserWhiskyApi addWhisky(String userId, UserWhiskyApi userWhiskyApi) {
-        UserWhisky newUserWhisky = userWhiskyMapper.mapApiToNewModel(userId, userWhiskyApi);
+    public UserWhiskyDto addWhisky(String userId, UserWhiskyDto userWhiskyDto) {
+        UserWhisky newUserWhisky = userWhiskyMapper.mapDtoToNewModel(userId, userWhiskyDto);
         UserWhisky created = userRepository.addWhisky(newUserWhisky);
-        return userWhiskyMapper.mapModelToApi(created);
+        return userWhiskyMapper.mapModelToDto(created);
     }
 }

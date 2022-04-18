@@ -146,7 +146,7 @@
                             <output>${project.build.directory}/generated-sources</output>
                             <apiPackage>${project.groupId}.${project.artifactId}.api</apiPackage>
                             <modelPackage>${project.groupId}.${project.artifactId}.model</modelPackage>
-                            <modelNameSuffix>Api</modelNameSuffix>
+                            <modelNameSuffix>Dto</modelNameSuffix>
                             <configOptions>
                                 <interfaceOnly>true</interfaceOnly>
                             </configOptions>

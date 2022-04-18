@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.kat.ue.whiskyup.mapper.PaginationCursorMapper;
 import pl.kat.ue.whiskyup.mapper.WhiskyMapper;
-import pl.kat.ue.whiskyup.model.WhiskiesFindResultApi;
+import pl.kat.ue.whiskyup.model.WhiskiesFindResultDto;
 import pl.kat.ue.whiskyup.model.Whisky;
 import pl.kat.ue.whiskyup.repository.WhiskyRepository;
 import software.amazon.awssdk.enhanced.dynamodb.model.Page;
@@ -21,12 +21,12 @@ public class WhiskyService {
     private final WhiskyMapper whiskyMapper;
     private final PaginationCursorMapper paginationCursorMapper;
 
-    public WhiskiesFindResultApi getWhiskies(String paginationCursor) {
+    public WhiskiesFindResultDto getWhiskies(String paginationCursor) {
         Map<String, AttributeValue> exclusiveStartKey = paginationCursorMapper.mapFromCursor(paginationCursor);
         Page<Whisky> page = whiskyRepository.getAllWhiskies(exclusiveStartKey);
-        return new WhiskiesFindResultApi()
+        return new WhiskiesFindResultDto()
                 .results(page.items().stream()
-                        .map(whiskyMapper::mapModelToApi)
+                        .map(whiskyMapper::mapModelToDto)
                         .collect(Collectors.toList()))
                 .exclusiveStartKey(paginationCursorMapper.mapToCursor(page.lastEvaluatedKey()));
     }

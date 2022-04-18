@@ -6,29 +6,30 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import pl.kat.ue.whiskyup.model.UserWhiskiesFindResultApi;
-import pl.kat.ue.whiskyup.model.UserWhiskyApi;
+import pl.kat.ue.whiskyup.api.UserApi;
+import pl.kat.ue.whiskyup.model.UserWhiskiesFindResultDto;
+import pl.kat.ue.whiskyup.model.UserWhiskyDto;
 import pl.kat.ue.whiskyup.service.UserService;
 
 @RestController
 @RequiredArgsConstructor
-public class UserController implements pl.kat.ue.whiskyup.api.UserApi {
+public class UserController implements UserApi {
 
     private final UserService userService;
 
     @Override
-    public ResponseEntity<UserWhiskiesFindResultApi> getUserWhiskies(@PathVariable String id,
+    public ResponseEntity<UserWhiskiesFindResultDto> getUserWhiskies(@PathVariable String id,
                                                                      @RequestParam(required = false) String exclusiveStartKey) {
 
-        UserWhiskiesFindResultApi result = userService.getUserWhiskies(id, exclusiveStartKey);
+        UserWhiskiesFindResultDto result = userService.getUserWhiskies(id, exclusiveStartKey);
         return ResponseEntity.ok(result);
     }
 
     @Override
-    public ResponseEntity<UserWhiskyApi> addUserWhisky(@PathVariable String id,
-                                                       @RequestBody UserWhiskyApi userWhiskyApi) {
+    public ResponseEntity<UserWhiskyDto> addUserWhisky(@PathVariable String id,
+                                                       @RequestBody UserWhiskyDto userWhiskyDto) {
 
-        UserWhiskyApi result = userService.addWhisky(id, userWhiskyApi);
+        UserWhiskyDto result = userService.addWhisky(id, userWhiskyDto);
         return ResponseEntity.ok(result);
     }
 }

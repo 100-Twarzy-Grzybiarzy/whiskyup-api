@@ -4,7 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import pl.kat.ue.whiskyup.model.User;
 import pl.kat.ue.whiskyup.model.UserWhisky;
-import pl.kat.ue.whiskyup.model.UserWhiskyApi;
+import pl.kat.ue.whiskyup.model.UserWhiskyDto;
 
 @Mapper(componentModel = "spring")
 public interface UserWhiskyMapper {
@@ -14,11 +14,11 @@ public interface UserWhiskyMapper {
 
     @Mapping(target = "userId", expression = "java( PK_PREFIX + userId )")
     @Mapping(target = "whiskyId", expression = "java( SK_PREFIX + java.util.UUID.randomUUID() )")
-    UserWhisky mapApiToNewModel(String userId, UserWhiskyApi userWhiskyApi);
+    UserWhisky mapDtoToNewModel(String userId, UserWhiskyDto userWhiskyDto);
 
-    UserWhisky mapApiToModel(UserWhiskyApi userWhiskyApi);
+    UserWhisky mapDtoToModel(UserWhiskyDto userWhiskyDto);
 
     @Mapping(target = "id", expression = "java( userWhisky.getWhiskyId().replace(SK_PREFIX, \"\") )")
-    UserWhiskyApi mapModelToApi(UserWhisky userWhisky);
+    UserWhiskyDto mapModelToDto(UserWhisky userWhisky);
 
 }

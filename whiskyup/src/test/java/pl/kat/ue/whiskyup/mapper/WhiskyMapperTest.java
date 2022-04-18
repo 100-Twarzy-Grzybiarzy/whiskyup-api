@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 import pl.kat.ue.whiskyup.model.Whisky;
-import pl.kat.ue.whiskyup.model.WhiskyApi;
+import pl.kat.ue.whiskyup.model.WhiskyDto;
 
 class WhiskyMapperTest {
 
@@ -17,19 +17,19 @@ class WhiskyMapperTest {
         whisky.setUrl("WHISKY#whiskybase.com/market/whisky/220455");
 
         //when
-        WhiskyApi whiskyApi = whiskyMapper.mapModelToApi(whisky);
+        WhiskyDto whiskyDto = whiskyMapper.mapModelToDto(whisky);
 
         //then
-        Assertions.assertEquals("whiskybase.com/market/whisky/220455", whiskyApi.getUrl());
+        Assertions.assertEquals("whiskybase.com/market/whisky/220455", whiskyDto.getUrl());
     }
 
     @Test
     void mapUrlFromApiToModel() {
-        WhiskyApi whiskyApi = new WhiskyApi();
-        whiskyApi.setUrl("whiskybase.com/market/whisky/220455");
+        WhiskyDto whiskyDto = new WhiskyDto();
+        whiskyDto.setUrl("whiskybase.com/market/whisky/220455");
 
         //when
-        Whisky whisky = whiskyMapper.mapApiToModel(whiskyApi);
+        Whisky whisky = whiskyMapper.mapDtoToModel(whiskyDto);
 
         //then
         Assertions.assertEquals("WHISKY#whiskybase.com/market/whisky/220455", whisky.getUrl());

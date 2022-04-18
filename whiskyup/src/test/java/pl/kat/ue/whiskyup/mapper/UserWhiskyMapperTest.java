@@ -4,21 +4,21 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 import pl.kat.ue.whiskyup.model.UserWhisky;
-import pl.kat.ue.whiskyup.model.UserWhiskyApi;
+import pl.kat.ue.whiskyup.model.UserWhiskyDto;
 
 class UserWhiskyMapperTest {
 
     private final UserWhiskyMapper userWhiskyMapper = Mappers.getMapper(UserWhiskyMapper.class);
 
     @Test
-    void shouldMapUserIdAndGenerateWhiskyIdFromApiToNewModel() {
+    void shouldMapUserIdAndGenerateWhiskyIdFromDtoToNewModel() {
         //given
         String userId = "abc123def";
-        UserWhiskyApi userWhiskyApi = new UserWhiskyApi();
-        userWhiskyApi.setId(null);
+        UserWhiskyDto userWhiskyDto = new UserWhiskyDto();
+        userWhiskyDto.setId(null);
 
         //when
-        UserWhisky userWhisky = userWhiskyMapper.mapApiToNewModel(userId, userWhiskyApi);
+        UserWhisky userWhisky = userWhiskyMapper.mapDtoToNewModel(userId, userWhiskyDto);
 
         //then
         Assertions.assertEquals("USER#abc123def", userWhisky.getUserId());
@@ -27,15 +27,15 @@ class UserWhiskyMapperTest {
     }
 
     @Test
-    void shouldMapWhiskyIdFromModelToApi() {
+    void shouldMapWhiskyIdFromModelToDto() {
         //given
         UserWhisky userWhisky = new UserWhisky();
         userWhisky.setWhiskyId("WHISKY#qwerty123");
 
         //when
-        UserWhiskyApi userWhiskyApi = userWhiskyMapper.mapModelToApi(userWhisky);
+        UserWhiskyDto userWhiskyDto = userWhiskyMapper.mapModelToDto(userWhisky);
 
         //then
-        Assertions.assertEquals("qwerty123", userWhiskyApi.getId());
+        Assertions.assertEquals("qwerty123", userWhiskyDto.getId());
     }
 }
