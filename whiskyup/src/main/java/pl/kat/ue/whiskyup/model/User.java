@@ -20,10 +20,12 @@ public class User {
     @DynamoDbPartitionKey
     @DynamoDbAttribute("PK")
     public String getPartitionKey(){ return id; }
+    public void setPartitionKey(String id){ this.id = id; }
 
     @DynamoDbSortKey
     @DynamoDbAttribute("SK")
     public String getSortKey(){ return id; }
+    public void setSortKey(String id){ this.id = id; }
 
     @Getter
     private String id;

@@ -20,6 +20,22 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WhiskiesFindResult'
+  /user:
+    post:
+      summary: Add user
+      operationId: addUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
   /user/{id}/whisky:
     get:
       summary: Get user whiskies
