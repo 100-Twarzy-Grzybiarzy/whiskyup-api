@@ -23,7 +23,7 @@ public class WhiskyRepository {
     }
 
     public Page<Whisky> getAllWhiskies(Map<String, AttributeValue> exclusiveStartKey) {
-        return whiskyTable.scan(r -> r.exclusiveStartKey(exclusiveStartKey).limit(3))
+        return whiskyTable.scan(r -> r.exclusiveStartKey(exclusiveStartKey))
                 .iterator()
                 .next();
     }
