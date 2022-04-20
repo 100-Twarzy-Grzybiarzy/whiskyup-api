@@ -1,0 +1,39 @@
+server:
+  port: 8080
+spring:
+  application.name: whiskyup
+jwt:
+  secret:
+    key: ${JWT_SECRET_KEY:mockSecretJwtKeyUsedWithHs512MustHaveSizeEqualOrGraterThan512BitsmockSecretJwtKeyUsedWithHs512MustHaveSizeEqualOrGraterThan512Bits}
+cloud:
+  aws:
+    stack:
+      auto: false
+    dynamodb:
+      table:
+        whisky-base: WhiskyBase
+        user: User
+---
+spring:
+  config:
+    activate:
+      on-profile: develop
+cloud:
+  aws:
+    region:
+      auto: false
+      static: eu-central-1
+    credentials:
+      access-key: mock
+      secret-key: mock
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+cloud:
+  aws:
+    region:
+      auto: false
+      static: eu-central-1
+    endpoint: http://localstack:4566

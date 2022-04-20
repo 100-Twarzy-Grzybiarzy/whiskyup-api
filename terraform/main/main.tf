@@ -4,20 +4,35 @@ module "iam" {
   tags   = var.tags
 }
 
-module "whisky_table" {
+module "whiskybase_table" {
   source = "../modules/dynamodb_table"
 
-  name      = "${var.prefix}_whisky"
-  hash_key  = "id"
-  range_key = "name"
+  name          = "WhiskyBase"
+  partition_key = "WhiskyUrl"
 
   attributes = [
     {
-      name = "id"
+      name = "WhiskyUrl"
       type = "S"
-    },
+    }
+  ]
+
+  tags = var.tags
+}
+
+module "user_table" {
+  source = "../modules/dynamodb_table"
+
+  name          = "User"
+  partition_key = "PK"
+  sort_key      = "SK"
+
+  attributes = [
     {
-      name = "name"
+      name = "PK"
+      type = "S"
+    }, {
+      name = "SK"
       type = "S"
     }
   ]

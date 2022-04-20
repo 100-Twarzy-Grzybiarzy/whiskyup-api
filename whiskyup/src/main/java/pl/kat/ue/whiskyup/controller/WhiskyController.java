@@ -1,28 +1,22 @@
 package pl.kat.ue.whiskyup.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
-import pl.kat.ue.whiskyup.model.WhiskiesFindResultApi;
-import pl.kat.ue.whiskyup.model.WhiskyApi;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import pl.kat.ue.whiskyup.api.WhiskyApi;
+import pl.kat.ue.whiskyup.model.WhiskiesFindResultDto;
 import pl.kat.ue.whiskyup.service.WhiskyService;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/whisky")
 @RequiredArgsConstructor
-public class WhiskyController {
+public class WhiskyController implements WhiskyApi {
 
     private final WhiskyService whiskyService;
 
-    @GetMapping
-    public WhiskiesFindResultApi getWhiskies(@RequestParam(required = false) String exclusiveStartKey) {
-        List<WhiskyApi> whiskies = whiskyService.getWhiskies(exclusiveStartKey);
-        return new WhiskiesFindResultApi().results(whiskies);
-    }
-
-    @PostMapping
-    public WhiskyApi addWhisky(@RequestBody WhiskyApi whiskyApi) {
-        return whiskyService.addWhisky(whiskyApi);
+    @Override
+    public ResponseEntity<WhiskiesFindResultDto> getWhiskies(@RequestParam(required = false) String exclusiveStartKey) {
+        WhiskiesFindResultDto result = whiskyService.getWhiskies(exclusiveStartKey);
+        return ResponseEntity.ok(result);
     }
 }

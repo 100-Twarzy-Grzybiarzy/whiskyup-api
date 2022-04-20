@@ -20,4 +20,4 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
       - name: Maven build and tests
         working-directory: ./whiskyup
-        run: mvn clean package
+        run: mvn clean package -Dspring.profiles.active=develop

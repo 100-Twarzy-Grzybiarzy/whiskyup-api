@@ -7,6 +7,7 @@ import lombok.Setter;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbAttribute;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortKey;
 
 import java.util.Set;
 
@@ -14,12 +15,15 @@ import java.util.Set;
 @AllArgsConstructor
 @Setter
 @DynamoDbBean
-public class Whisky {
+public class UserWhisky {
 
-    public final static String PK_PREFIX = "WHISKY#";
+    public final static String SK_PREFIX = "WHISKY#";
 
-    @Getter(onMethod = @__({@DynamoDbPartitionKey, @DynamoDbAttribute("WhiskyUrl")}))
-    private String url;
+    @Getter(onMethod = @__({@DynamoDbPartitionKey, @DynamoDbAttribute("PK")}))
+    private String userId;
+
+    @Getter(onMethod = @__({@DynamoDbSortKey, @DynamoDbAttribute("SK")}))
+    private String whiskyId;
 
     @Getter(onMethod = @__({@DynamoDbAttribute("Name")}))
     private String name;
@@ -68,5 +72,4 @@ public class Whisky {
 
     @Getter(onMethod = @__({@DynamoDbAttribute("Tags")}))
     private Set<String> tags;
-
 }

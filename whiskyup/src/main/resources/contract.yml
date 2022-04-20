@@ -6,13 +6,13 @@ paths:
   /whisky:
     get:
       summary: Get whiskies
+      operationId: getWhiskies
       parameters:
         - name: exclusiveStartKey
           in: query
           required: false
           schema:
             type: string
-            default: null
       responses:
         '200':
           description: ''
@@ -20,37 +20,65 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WhiskiesFindResult'
-  /user/whisky:
-    get:
-      summary: Get whiskies
-      parameters:
-        - name: exclusiveStartKey
-          in: query
-          required: false
-          schema:
-            type: string
-            default: null
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WhiskiesFindResult'
+  /user:
     post:
-      summary: Add whisky
+      summary: Add user
+      operationId: addUser
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Whisky'
+              $ref: '#/components/schemas/User'
       responses:
         '200':
           description: ''
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Whisky'
+                $ref: '#/components/schemas/User'
+  /user/{id}/whisky:
+    get:
+      summary: Get user whiskies
+      operationId: getUserWhiskies
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: exclusiveStartKey
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserWhiskiesFindResult'
+    post:
+      summary: Add user whisky
+      operationId: addUserWhisky
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserWhisky'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserWhisky'
 components:
   schemas:
     WhiskiesFindResult:
@@ -62,6 +90,15 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Whisky"
+    UserWhiskiesFindResult:
+      type: object
+      properties:
+        exclusiveStartKey:
+          type: string
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserWhisky"
     Whisky:
       type: object
       properties:
@@ -102,6 +139,48 @@ components:
         amountOfRatings:
           type: integer
           format: int32
+        price:
+          type: number
+          format: double
+        tags:
+          type: array
+          items:
+            type: string
+    UserWhisky:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        category:
+          type: string
+        distillery:
+          type: string
+        bottler:
+          type: string
+        bottlingSeries:
+          type: string
+        bottled:
+          type: string
+        vintage:
+          type: integer
+          format: int32
+        stagedAge:
+          type: integer
+          format: int32
+        strength:
+          type: number
+          format: double
+        size:
+          type: integer
+          format: int32
+        rating:
+          type: number
+          format: double
+        userRating:
+          type: number
+          format: double
         price:
           type: number
           format: double
