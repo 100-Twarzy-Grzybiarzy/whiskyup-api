@@ -2,6 +2,9 @@ server:
   port: 8080
 spring:
   application.name: whiskyup
+jwt:
+  secret:
+    key: ${JWT_SECRET_KEY:mockSecretJwtKeyUsedWithHs512MustHaveSizeEqualOrGraterThan512BitsmockSecretJwtKeyUsedWithHs512MustHaveSizeEqualOrGraterThan512Bits}
 cloud:
   aws:
     stack:
@@ -10,22 +13,27 @@ cloud:
       table:
         whisky-base: WhiskyBase
         user: User
-jwt:
-  secret:
-    mock: mockSecretJwtKeyUsedWithHs512MustHaveSizeEqualOrGraterThan512BitsmockSecretJwtKeyUsedWithHs512MustHaveSizeEqualOrGraterThan512Bits
-    key: ${JWT_SECRET_KEY:${jwt.secret.mock}}
-
 ---
-
+spring:
+  config:
+    activate:
+      on-profile: develop
+cloud:
+  aws:
+    region:
+      auto: false
+      static: eu-central-1
+    credentials:
+      access-key: mock
+      secret-key: mock
+---
 spring:
   config:
     activate:
       on-profile: local
 cloud:
   aws:
-    stack:
-      auto: false
     region:
+      auto: false
       static: eu-central-1
-    end-point:
-      uri: http://localstack:4566
+    endpoint: http://localstack:4566

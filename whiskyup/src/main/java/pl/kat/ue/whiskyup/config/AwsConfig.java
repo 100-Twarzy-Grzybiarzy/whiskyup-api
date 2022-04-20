@@ -17,13 +17,22 @@ public class AwsConfig {
     @Value("${cloud.aws.region.static:}")
     private String AWS_REGION;
 
-    @Value("${cloud.aws.end-point.uri:}")
+    @Value("${cloud.aws.endpoint:}")
     private String LOCALSTACK_ENDPOINT;
 
     @Bean("dynamoDbClient")
-    @Profile("!local")
+    @Profile("default")
     public DynamoDbClient getDynamoDbClient() {
         return DynamoDbClient.create();
+    }
+
+    @Bean("dynamoDbClient")
+    @Profile("develop")
+    public DynamoDbClient getDynamoDbClientDevelop() {
+        return DynamoDbClient.builder()
+                .region(Region.of(AWS_REGION))
+                .credentialsProvider(DefaultCredentialsProvider.builder().build())
+                .build();
     }
 
     @Bean("dynamoDbClient")
