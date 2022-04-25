@@ -13,6 +13,10 @@ cloud:
       table:
         whisky-base: WhiskyBase
         user: User
+    sqs:
+      queue:
+        new-url: new.url
+        new-whisky: new.whisky
 ---
 spring:
   config:
