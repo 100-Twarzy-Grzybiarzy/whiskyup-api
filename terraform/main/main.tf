@@ -42,12 +42,12 @@ module "user_table" {
 
 module "new_whisky_queue" {
   source = "../modules/sqs_queue"
-  name   = "new.whisky"
+  name   = "new-whisky"
   tags   = var.tags
 }
 
 module "new_url_queue" {
   source = "../modules/sqs_queue"
-  name   = "new.url"
+  name   = "new-url"
   tags   = var.tags
 }

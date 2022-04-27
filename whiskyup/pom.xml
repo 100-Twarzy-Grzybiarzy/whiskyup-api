@@ -24,7 +24,7 @@
         <org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
         <io.springfox.version>3.0.0</io.springfox.version>
         <io.jsonwebtoken.version>0.11.2</io.jsonwebtoken.version>
-        <spring.cloud.version>Hoxton.SR3</spring.cloud.version>
+        <awsspring.cloud.version>2.4.1</awsspring.cloud.version>
     </properties>
 
     <dependencyManagement>
@@ -37,9 +37,9 @@
                 <scope>import</scope>
             </dependency>
             <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-dependencies</artifactId>
-                <version>${spring.cloud.version}</version>
+                <groupId>io.awspring.cloud</groupId>
+                <artifactId>spring-cloud-aws-dependencies</artifactId>
+                <version>${awsspring.cloud.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -52,7 +52,7 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.cloud</groupId>
+            <groupId>io.awspring.cloud</groupId>
             <artifactId>spring-cloud-starter-aws-messaging</artifactId>
         </dependency>
         <dependency>
@@ -60,11 +60,11 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.openapitools</groupId>
@@ -86,7 +86,6 @@
             <artifactId>validation-api</artifactId>
             <version>${javax.validation.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
@@ -109,16 +108,10 @@
             <version>${io.jsonwebtoken.version}</version>
             <scope>runtime</scope>
         </dependency>
-
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>dynamodb-enhanced</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency>
-
     </dependencies>
 
     <build>
