@@ -31,4 +31,8 @@ public class WhiskyService {
                 .exclusiveStartKey(paginationCursorMapper.mapToCursor(page.lastEvaluatedKey()));
     }
 
+    public void addWhisky(Whisky whisky){
+        whiskyRepository.addWhisky(whisky);
+    }
+
 }

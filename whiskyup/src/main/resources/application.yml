@@ -13,11 +13,15 @@ cloud:
       table:
         whisky-base: WhiskyBase
         user: User
+    sqs:
+      queue:
+        new-url: new.url
+        new-whisky: new-whisky
 ---
 spring:
   config:
     activate:
-      on-profile: develop
+      on-profile: test
 cloud:
   aws:
     region:
@@ -26,6 +30,8 @@ cloud:
     credentials:
       access-key: mock
       secret-key: mock
+    sqs:
+      enabled: false
 ---
 spring:
   config:

@@ -1,48 +1,33 @@
 package pl.kat.ue.whiskyup.config;
 
-import org.springframework.beans.factory.annotation.Value;
+import com.amazonaws.services.sqs.AmazonSQSAsync;
+import com.amazonaws.services.sqs.AmazonSQSAsyncClientBuilder;
+import io.awspring.cloud.messaging.config.QueueMessageHandlerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
+import org.springframework.messaging.converter.MappingJackson2MessageConverter;
+import org.springframework.messaging.handler.annotation.support.PayloadMethodArgumentResolver;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
-import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
-import java.net.URI;
+import java.util.List;
 
 @Configuration
+@Slf4j
 public class AwsConfig {
 
-    @Value("${cloud.aws.region.static:}")
-    private String AWS_REGION;
-
-    @Value("${cloud.aws.endpoint:}")
-    private String LOCALSTACK_ENDPOINT;
-
-    @Bean("dynamoDbClient")
-    @Profile("default")
-    public DynamoDbClient getDynamoDbClient() {
+    @Bean
+    @Profile("!(test | local)")
+    public DynamoDbClient dynamoDbClient() {
         return DynamoDbClient.create();
     }
 
-    @Bean("dynamoDbClient")
-    @Profile("develop")
-    public DynamoDbClient getDynamoDbClientDevelop() {
-        return DynamoDbClient.builder()
-                .region(Region.of(AWS_REGION))
-                .credentialsProvider(DefaultCredentialsProvider.builder().build())
-                .build();
-    }
-
-    @Bean("dynamoDbClient")
-    @Profile("local")
-    public DynamoDbClient getDynamoDbClientLocal() {
-        return DynamoDbClient.builder()
-                .endpointOverride(URI.create(LOCALSTACK_ENDPOINT))
-                .region(Region.of(AWS_REGION))
-                .credentialsProvider(DefaultCredentialsProvider.builder().build())
-                .build();
+    @Bean
+    @Profile("!(test | local)")
+    public AmazonSQSAsync amazonSQS() {
+        return AmazonSQSAsyncClientBuilder.standard().build();
     }
 
     @Bean
@@ -51,4 +36,15 @@ public class AwsConfig {
                 .dynamoDbClient(dynamoDbClient)
                 .build();
     }
+
+    @Bean
+    public QueueMessageHandlerFactory queueMessageHandlerFactory() {
+        var factory = new QueueMessageHandlerFactory();
+        MappingJackson2MessageConverter messageConverter = new MappingJackson2MessageConverter();
+        messageConverter.setStrictContentTypeMatch(false);
+        messageConverter.setSerializedPayloadClass(String.class);
+        factory.setArgumentResolvers(List.of(new PayloadMethodArgumentResolver(messageConverter)));
+        return factory;
+    }
+
 }
