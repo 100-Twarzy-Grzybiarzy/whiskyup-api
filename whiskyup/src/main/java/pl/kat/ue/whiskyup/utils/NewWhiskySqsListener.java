@@ -4,8 +4,8 @@ import io.awspring.cloud.messaging.listener.annotation.SqsListener;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import pl.kat.ue.whiskyup.mapper.WhiskyMapper;
-import pl.kat.ue.whiskyup.model.Whisky;
+import pl.kat.ue.whiskyup.mapper.WhiskyBaseMapper;
+import pl.kat.ue.whiskyup.model.WhiskyBase;
 import pl.kat.ue.whiskyup.model.WhiskyDto;
 import pl.kat.ue.whiskyup.service.WhiskyService;
 
@@ -15,14 +15,14 @@ import pl.kat.ue.whiskyup.service.WhiskyService;
 @Slf4j
 public class NewWhiskySqsListener {
 
-    private final WhiskyMapper whiskyMapper;
+    private final WhiskyBaseMapper whiskyBaseMapper;
     private final WhiskyService whiskyService;
 
     @SqsListener("${cloud.aws.sqs.queue.new-whisky}")
     public void onNewWhiskySqsMessage(final WhiskyDto whiskyDto) {
         log.info("New whisky '{}'", whiskyDto.getUrl());
-        Whisky whisky = whiskyMapper.mapDtoToModel(whiskyDto);
-        whiskyService.addWhisky(whisky);
+        WhiskyBase whiskyBase = whiskyBaseMapper.mapDtoToModel(whiskyDto);
+        whiskyService.addWhisky(whiskyBase);
     }
 
 }

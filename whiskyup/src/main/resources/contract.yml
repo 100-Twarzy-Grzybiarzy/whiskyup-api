@@ -102,6 +102,8 @@ components:
     Whisky:
       type: object
       properties:
+        id:
+          type: string
         url:
           type: string
         name:
@@ -117,6 +119,8 @@ components:
         bottlingSeries:
           type: string
         bottled:
+          type: string
+        brand:
           type: string
         vintage:
           type: integer

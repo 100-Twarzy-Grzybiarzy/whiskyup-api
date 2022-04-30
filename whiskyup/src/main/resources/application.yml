@@ -11,11 +11,10 @@ cloud:
       auto: false
     dynamodb:
       table:
-        whisky-base: WhiskyBase
-        user: User
+        whiskyup: WhiskyUp
     sqs:
       queue:
-        new-url: new.url
+        new-url: new-url
         new-whisky: new-whisky
 ---
 spring:
