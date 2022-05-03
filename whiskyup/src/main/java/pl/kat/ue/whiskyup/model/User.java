@@ -1,12 +1,14 @@
 package pl.kat.ue.whiskyup.model;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbAttribute;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortKey;
 
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Setter
 @DynamoDbBean
 public class User {

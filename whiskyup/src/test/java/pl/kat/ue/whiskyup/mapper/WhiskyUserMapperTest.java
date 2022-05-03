@@ -16,17 +16,14 @@ class WhiskyUserMapperTest {
     @Test
     void shouldMapFromDtoToNewModel() {
         //given
-        WhiskyUser whiskyUser = null;
-        String userId = "abc123def";
+        WhiskyUser whiskyUser;
         UserWhiskyDto userWhiskyDto = new UserWhiskyDto();
         Ksuid id = Ksuid.fromString("1HCpXwx2EK9oYluWbacgeCnFcLf");
 
         //when
-
         try (MockedStatic<Ksuid> mockedKsuid = Mockito.mockStatic(Ksuid.class)) {
-            //when
             mockedKsuid.when(Ksuid::newKsuid).thenReturn(id);
-            whiskyUser = whiskyUserMapper.mapDtoToModel(userId, userWhiskyDto);
+            whiskyUser = whiskyUserMapper.mapDtoToModel("abc123def", userWhiskyDto);
         }
 
         //then
@@ -38,7 +35,7 @@ class WhiskyUserMapperTest {
     @Test
     void shouldMapFromModelToDto() {
         //given
-        WhiskyUser whiskyUser = new WhiskyUser();
+        WhiskyUser whiskyUser = WhiskyUser.builder().build();
         whiskyUser.setWhiskyId("qwerty123");
 
         //when

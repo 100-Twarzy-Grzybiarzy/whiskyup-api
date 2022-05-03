@@ -27,9 +27,9 @@ public class UserController implements UserApi {
 
     @Override
     public ResponseEntity<UserWhiskiesFindResultDto> getUserWhiskies(@PathVariable String id,
-                                                                     @RequestParam(required = false) String exclusiveStartKey) {
+                                                                     @RequestParam(required = false) String pageCursor) {
 
-        UserWhiskiesFindResultDto result = userService.getUserWhiskies(id, exclusiveStartKey);
+        UserWhiskiesFindResultDto result = userService.getUserWhiskies(id, pageCursor);
         return ResponseEntity.ok(result);
     }
 

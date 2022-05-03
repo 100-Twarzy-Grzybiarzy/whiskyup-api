@@ -3,12 +3,48 @@ info:
   title: Whisky Up API
   version: 1.0.0
 paths:
-  /whisky:
+  /brands:
+    get:
+      summary: Get brands
+      operationId: getBrands
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+  /price-ranges:
+    get:
+      summary: Get price ranges
+      operationId: getPriceRanges
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+  /whiskies:
     get:
       summary: Get whiskies
       operationId: getWhiskies
       parameters:
-        - name: exclusiveStartKey
+        - name: pageCursor
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: filter
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/FilterType"
+        - name: value
           in: query
           required: false
           schema:
@@ -36,7 +72,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
-  /user/{id}/whisky:
+  /user/{id}/whiskies:
     get:
       summary: Get user whiskies
       operationId: getUserWhiskies
@@ -46,7 +82,7 @@ paths:
           required: true
           schema:
             type: string
-        - name: exclusiveStartKey
+        - name: pageCursor
           in: query
           required: false
           schema:
@@ -58,6 +94,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserWhiskiesFindResult'
+  /user/{id}/whisky:
     post:
       summary: Add user whisky
       operationId: addUserWhisky
@@ -84,7 +121,7 @@ components:
     WhiskiesFindResult:
       type: object
       properties:
-        exclusiveStartKey:
+        pageCursor:
           type: string
         results:
           type: array
@@ -93,7 +130,7 @@ components:
     UserWhiskiesFindResult:
       type: object
       properties:
-        exclusiveStartKey:
+        pageCursor:
           type: string
         results:
           type: array
@@ -105,6 +142,8 @@ components:
         id:
           type: string
         url:
+          type: string
+        addedDate:
           type: string
         name:
           type: string
@@ -203,3 +242,8 @@ components:
           type: string
         distillery:
           type: string
+    FilterType:
+      type: string
+      enum:
+        - priceRange
+        - brand

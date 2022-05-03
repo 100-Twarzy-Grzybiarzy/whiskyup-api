@@ -1,11 +1,13 @@
 package pl.kat.ue.whiskyup.model;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.*;
 
 import java.util.Set;
 
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Setter
 @DynamoDbBean
 public class WhiskyUser {
@@ -27,9 +29,6 @@ public class WhiskyUser {
 
     @Getter(onMethod = @__({@DynamoDbAttribute("Name")}))
     private String name;
-
-    @Getter(onMethod = @__({@DynamoDbAttribute("ThumbnailUrl")}))
-    private String thumbnailUrl;
 
     @Getter(onMethod = @__({@DynamoDbAttribute("Category")}))
     private String category;
@@ -64,11 +63,8 @@ public class WhiskyUser {
     @Getter(onMethod = @__({@DynamoDbAttribute("UserRating")}))
     private Double userRating;
 
-    @Getter(onMethod = @__({@DynamoDbAttribute("AmountOfRatings")}))
-    private Integer amountOfRatings;
-
     @Getter(onMethod = @__({@DynamoDbAttribute("Price")}))
-    private String price;
+    private Double price;
 
     @Getter(onMethod = @__({@DynamoDbAttribute("Tags")}))
     private Set<String> tags;

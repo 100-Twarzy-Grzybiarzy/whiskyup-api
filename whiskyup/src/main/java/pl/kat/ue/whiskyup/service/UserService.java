@@ -10,6 +10,7 @@ import pl.kat.ue.whiskyup.repository.UserRepository;
 import software.amazon.awssdk.enhanced.dynamodb.model.Page;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -23,7 +24,7 @@ public class UserService {
     private final PaginationCursorMapper paginationCursorMapper;
 
     public UserDto addUser(UserDto userDto) {
-        User newUser = userMapper.mapDtoToNewModel(userDto);
+        User newUser = userMapper.mapDtoToModel(userDto);
         User created = userRepository.addUser(newUser);
         return userMapper.mapModelToDto(created);
     }
@@ -31,11 +32,16 @@ public class UserService {
     public UserWhiskiesFindResultDto getUserWhiskies(String userId, String paginationCursor) {
         Map<String, AttributeValue> exclusiveStartKey = paginationCursorMapper.mapFromCursor(paginationCursor);
         Page<WhiskyUser> page = userRepository.getAllUserWhiskies(userId, exclusiveStartKey);
+
+        List<UserWhiskyDto> results = page.items().stream()
+                .map(whiskyUserMapper::mapModelToDto)
+                .collect(Collectors.toList());
+
+        String pageCursor = paginationCursorMapper.mapToCursor(page.lastEvaluatedKey());
+
         return new UserWhiskiesFindResultDto()
-                .results(page.items().stream()
-                        .map(whiskyUserMapper::mapModelToDto)
-                        .collect(Collectors.toList()))
-                .exclusiveStartKey(paginationCursorMapper.mapToCursor(page.lastEvaluatedKey()));
+                .results(results)
+                .pageCursor(pageCursor);
     }
 
     public UserWhiskyDto addWhisky(String userId, UserWhiskyDto userWhiskyDto) {

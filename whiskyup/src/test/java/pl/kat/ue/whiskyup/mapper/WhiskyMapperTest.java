@@ -9,14 +9,12 @@ import org.mockito.Mockito;
 import pl.kat.ue.whiskyup.model.WhiskyBase;
 import pl.kat.ue.whiskyup.model.WhiskyDto;
 
-import java.time.LocalDate;
-
 class WhiskyMapperTest {
 
     private final WhiskyBaseMapper whiskyBaseMapper = Mappers.getMapper(WhiskyBaseMapper.class);
 
     @Test
-    void shouldMapUrlFromModelToApi() {
+    void shouldMapFromModelToApi() {
         //given
         WhiskyBase whiskyBase = new WhiskyBase();
         whiskyBase.setUrl("whiskybase.com/market/whisky/220455");
@@ -29,28 +27,28 @@ class WhiskyMapperTest {
     }
 
     @Test
-    void mapUrlFromApiToModel() {
+    void shouldMapFromApiToModel() {
+        //given
         WhiskyBase whiskyBase;
-        WhiskyDto whiskyDto = new WhiskyDto();
-        whiskyDto.setBrand("Aberlour");
-        whiskyDto.setPrice(120.20);
+        WhiskyDto whiskyDto = new WhiskyDto()
+                .brand("Aberlour")
+                .price(120.20)
+                .addedDate("30.04.22");
         Ksuid id = Ksuid.fromString("1HCpXwx2EK9oYluWbacgeCnFcLf");
-        LocalDate date = LocalDate.parse("2022-04-30");
 
-        try (MockedStatic<Ksuid> mockedKsuid = Mockito.mockStatic(Ksuid.class);
-             MockedStatic<LocalDate> mockedLocalDate = Mockito.mockStatic(LocalDate.class)) {
-            //when
+        //when
+        try (MockedStatic<Ksuid> mockedKsuid = Mockito.mockStatic(Ksuid.class)) {
             mockedKsuid.when(Ksuid::newKsuid).thenReturn(id);
-            mockedLocalDate.when(LocalDate::now).thenReturn(date);
             whiskyBase = whiskyBaseMapper.mapDtoToModel(whiskyDto);
         }
 
         //then
+        Assertions.assertEquals("2022-04-30", whiskyBase.getAddedDate().toString());
         Assertions.assertEquals("WHISKY#1HCpXwx2EK9oYluWbacgeCnFcLf", whiskyBase.getPk());
         Assertions.assertEquals("WHISKY#1HCpXwx2EK9oYluWbacgeCnFcLf", whiskyBase.getSk());
         Assertions.assertEquals("WHISKIES#2022-04-30", whiskyBase.getGsi1pk());
         Assertions.assertEquals("WHISKY#1HCpXwx2EK9oYluWbacgeCnFcLf", whiskyBase.getGsi1sk());
-        Assertions.assertEquals("PRICERANGE#0-50", whiskyBase.getGsi2pk());
+        Assertions.assertEquals("PRICERANGE#100-200", whiskyBase.getGsi2pk());
         Assertions.assertEquals("PRICE#120.20#WHISKY#1HCpXwx2EK9oYluWbacgeCnFcLf", whiskyBase.getGsi2sk());
         Assertions.assertEquals("BRAND#aberlour", whiskyBase.getGsi3pk());
         Assertions.assertEquals("WHISKY#1HCpXwx2EK9oYluWbacgeCnFcLf", whiskyBase.getGsi3sk());

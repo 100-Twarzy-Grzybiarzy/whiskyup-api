@@ -4,16 +4,21 @@ import com.github.ksuid.Ksuid;
 import org.mapstruct.*;
 import pl.kat.ue.whiskyup.model.WhiskyBase;
 import pl.kat.ue.whiskyup.model.WhiskyDto;
+import pl.kat.ue.whiskyup.service.PriceRangeService;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Optional;
 
 @Mapper(componentModel = "spring")
 public interface WhiskyBaseMapper {
 
+    DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yy");
+
     @Mapping(target = "pk", source = "id", qualifiedByName = "mapPk")
     @Mapping(target = "sk", source = "id", qualifiedByName = "mapSk")
-    @Mapping(target = "gsi1pk", expression = "java( WhiskyBase.GSI1_PK_PREFIX + java.time.LocalDate.now() )")
+    @Mapping(target = "gsi1pk", source = "addedDate", qualifiedByName = "mapGsi1Pk")
     @Mapping(target = "gsi1sk", source = "id", qualifiedByName = "mapGsi1Sk")
     @Mapping(target = "gsi2pk", source = "price", qualifiedByName = "mapGsi2Pk")
     @Mapping(target = "gsi2sk", source = "whiskyDto", qualifiedByName = "mapGsi2Sk")
@@ -24,8 +29,9 @@ public interface WhiskyBaseMapper {
     WhiskyDto mapModelToDto(WhiskyBase whiskyBase);
 
     @BeforeMapping
-    default void generateId(WhiskyDto whiskyDto, @TargetType Class<WhiskyBase> targetType) {
+    default void generateId(WhiskyDto whiskyDto, @MappingTarget WhiskyBase.WhiskyBaseBuilder target) {
         whiskyDto.setId(Ksuid.newKsuid().toString());
+        whiskyDto.setAddedDate(LocalDate.parse(whiskyDto.getAddedDate(), DATE_FORMAT).toString());
     }
 
     @Named("mapPk")
@@ -38,6 +44,11 @@ public interface WhiskyBaseMapper {
         return WhiskyBase.SK_PREFIX + id;
     }
 
+    @Named("mapGsi1Pk")
+    default String mapGsi1Pk(String addedDate) {
+        return WhiskyBase.GSI1_PK_PREFIX + addedDate;
+    }
+
     @Named("mapGsi1Sk")
     default String mapGsi1Sk(String id) {
         return WhiskyBase.GSI1_SK_PREFIX + id;
@@ -45,8 +56,7 @@ public interface WhiskyBaseMapper {
 
     @Named("mapGsi2Pk")
     default String mapGsi2Pk(Double price) {
-        String priceRange = "0-50";
-        return WhiskyBase.GSI2_PK_PREFIX + priceRange;
+        return WhiskyBase.GSI2_PK_PREFIX + PriceRangeService.getPriceRange(price);
     }
 
     @Named("mapGsi2Sk")
@@ -64,5 +74,4 @@ public interface WhiskyBaseMapper {
     default String mapGsi3Sk(String id) {
         return WhiskyBase.GSI3_SK_PREFIX + id;
     }
-
 }

@@ -9,6 +9,7 @@ import pl.kat.ue.whiskyup.model.WhiskyUser;
 public interface WhiskyUserMapper {
 
     @Mapping(target = "userId", source = "userId")
+    @Mapping(target = "whiskyId", source = "userWhiskyDto.id")
     @Mapping(target = "pk", source = "userId", qualifiedByName = "mapPk")
     @Mapping(target = "sk", source = "userWhiskyDto.id", qualifiedByName = "mapSk")
     WhiskyUser mapDtoToModel(String userId, UserWhiskyDto userWhiskyDto);
@@ -17,7 +18,7 @@ public interface WhiskyUserMapper {
     UserWhiskyDto mapModelToDto(WhiskyUser whiskyUser);
 
     @BeforeMapping
-    default void generateWhiskyId(UserWhiskyDto userWhiskyDto, @TargetType Class<WhiskyUser> targetType) {
+    default void generateWhiskyId(UserWhiskyDto userWhiskyDto, @MappingTarget WhiskyUser.WhiskyUserBuilder target) {
         userWhiskyDto.setId(Ksuid.newKsuid().toString());
     }
 
@@ -30,5 +31,4 @@ public interface WhiskyUserMapper {
     default String mapSk(String id) {
         return WhiskyUser.SK_PREFIX + id;
     }
-
 }
