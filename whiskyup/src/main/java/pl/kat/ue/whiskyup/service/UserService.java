@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.kat.ue.whiskyup.mapper.PaginationCursorMapper;
 import pl.kat.ue.whiskyup.mapper.UserMapper;
-import pl.kat.ue.whiskyup.mapper.WhiskyUserMapper;
+import pl.kat.ue.whiskyup.mapper.UserWhiskyMapper;
 import pl.kat.ue.whiskyup.model.*;
 import pl.kat.ue.whiskyup.repository.UserRepository;
 import software.amazon.awssdk.enhanced.dynamodb.model.Page;
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final WhiskyUserMapper whiskyUserMapper;
+    private final UserWhiskyMapper userWhiskyMapper;
     private final UserMapper userMapper;
     private final PaginationCursorMapper paginationCursorMapper;
 
@@ -29,24 +29,24 @@ public class UserService {
         return userMapper.mapModelToDto(created);
     }
 
-    public UserWhiskiesFindResultDto getUserWhiskies(String userId, String paginationCursor) {
+    public WhiskiesFindResultDto getUserWhiskies(String userId, String paginationCursor) {
         Map<String, AttributeValue> exclusiveStartKey = paginationCursorMapper.mapFromCursor(paginationCursor);
-        Page<WhiskyUser> page = userRepository.getAllUserWhiskies(userId, exclusiveStartKey);
+        Page<UserWhisky> page = userRepository.getAllUserWhiskies(userId, exclusiveStartKey);
 
-        List<UserWhiskyDto> results = page.items().stream()
-                .map(whiskyUserMapper::mapModelToDto)
+        List<WhiskyDto> results = page.items().stream()
+                .map(userWhiskyMapper::mapModelToDto)
                 .collect(Collectors.toList());
 
         String pageCursor = paginationCursorMapper.mapToCursor(page.lastEvaluatedKey());
 
-        return new UserWhiskiesFindResultDto()
+        return new WhiskiesFindResultDto()
                 .results(results)
                 .pageCursor(pageCursor);
     }
 
-    public UserWhiskyDto addWhisky(String userId, UserWhiskyDto userWhiskyDto) {
-        WhiskyUser newWhiskyUser = whiskyUserMapper.mapDtoToModel(userId, userWhiskyDto);
-        WhiskyUser created = userRepository.addUserWhisky(newWhiskyUser);
-        return whiskyUserMapper.mapModelToDto(created);
+    public WhiskyDto addWhisky(String userId, WhiskyDto whiskyDto) {
+        UserWhisky newUserWhisky = userWhiskyMapper.mapDtoToModel(userId, whiskyDto);
+        UserWhisky created = userRepository.addUserWhisky(newUserWhisky);
+        return userWhiskyMapper.mapModelToDto(created);
     }
 }

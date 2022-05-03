@@ -2,8 +2,9 @@ package pl.kat.ue.whiskyup.repository;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
+import pl.kat.ue.whiskyup.dynamometadata.AttributeValues;
 import pl.kat.ue.whiskyup.model.User;
-import pl.kat.ue.whiskyup.model.WhiskyUser;
+import pl.kat.ue.whiskyup.model.UserWhisky;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
@@ -18,13 +19,13 @@ import java.util.Map;
 @Repository
 public class UserRepository {
 
-    private final DynamoDbTable<WhiskyUser> userWhiskyTable;
+    private final DynamoDbTable<UserWhisky> userWhiskyTable;
     private final DynamoDbTable<User> userTable;
 
     public UserRepository(@Value("${cloud.aws.dynamodb.table.whiskyup}") String name,
                           DynamoDbEnhancedClient dynamoDbClient) {
 
-        this.userWhiskyTable = dynamoDbClient.table(name, TableSchema.fromBean(WhiskyUser.class));
+        this.userWhiskyTable = dynamoDbClient.table(name, TableSchema.fromBean(UserWhisky.class));
         this.userTable = dynamoDbClient.table(name, TableSchema.fromBean(User.class));
     }
 
@@ -33,22 +34,21 @@ public class UserRepository {
         return user;
     }
 
-    public Page<WhiskyUser> getAllUserWhiskies(String userId, Map<String, AttributeValue> exclusiveStartKey) {
+    public Page<UserWhisky> getAllUserWhiskies(String userId, Map<String, AttributeValue> exclusiveStartKey) {
         return userWhiskyTable.query(QueryEnhancedRequest.builder()
                         .exclusiveStartKey(exclusiveStartKey)
                         .queryConditional(QueryConditional.sortBeginsWith(
                                 Key.builder()
-                                        .partitionValue(User.PK_PREFIX + userId)
-                                        .sortValue(WhiskyUser.SK_PREFIX)
+                                        .partitionValue(AttributeValues.UserWhisky.PARTITION_KEY + userId)
+                                        .sortValue(AttributeValues.UserWhisky.SORT_KEY)
                                         .build()))
                         .build())
                 .iterator()
                 .next();
     }
 
-    public WhiskyUser addUserWhisky(WhiskyUser whiskyUser) {
-        userWhiskyTable.putItem(whiskyUser);
-        return whiskyUser;
+    public UserWhisky addUserWhisky(UserWhisky userWhisky) {
+        userWhiskyTable.putItem(userWhisky);
+        return userWhisky;
     }
-
 }

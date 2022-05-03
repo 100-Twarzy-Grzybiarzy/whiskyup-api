@@ -39,5 +39,4 @@ public class AwsConfigLocal {
                         .EndpointConfiguration(LOCALSTACK_ENDPOINT, AWS_REGION))
                 .build();
     }
-
 }

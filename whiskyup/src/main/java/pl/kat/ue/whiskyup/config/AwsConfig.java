@@ -3,7 +3,6 @@ package pl.kat.ue.whiskyup.config;
 import com.amazonaws.services.sqs.AmazonSQSAsync;
 import com.amazonaws.services.sqs.AmazonSQSAsyncClientBuilder;
 import io.awspring.cloud.messaging.config.QueueMessageHandlerFactory;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -16,7 +15,6 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import java.util.List;
 
 @Configuration
-@Slf4j
 public class AwsConfig {
 
     @Bean

@@ -1,6 +1,7 @@
 package pl.kat.ue.whiskyup.mapper;
 
 import org.mapstruct.*;
+import pl.kat.ue.whiskyup.dynamometadata.AttributeValues;
 import pl.kat.ue.whiskyup.model.User;
 import pl.kat.ue.whiskyup.model.UserDto;
 
@@ -22,11 +23,11 @@ public interface UserMapper {
 
     @Named("mapPk")
     default String mapPk(String id) {
-        return User.PK_PREFIX + id;
+        return AttributeValues.User.PARTITION_KEY + id;
     }
 
     @Named("mapSk")
     default String mapSk(String id) {
-        return User.SK_PREFIX + id;
+        return AttributeValues.User.SORT_KEY + id;
     }
 }

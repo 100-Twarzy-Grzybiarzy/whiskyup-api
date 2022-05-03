@@ -1,7 +1,8 @@
 package pl.kat.ue.whiskyup.mapper;
 
 import org.mapstruct.*;
-import pl.kat.ue.whiskyup.model.WhiskyBase;
+import pl.kat.ue.whiskyup.dynamometadata.AttributeValues;
+import pl.kat.ue.whiskyup.model.Whisky;
 import pl.kat.ue.whiskyup.model.WhiskyDto;
 import pl.kat.ue.whiskyup.service.PriceRangeService;
 import pl.kat.ue.whiskyup.utils.manager.KsuidManager;
@@ -12,7 +13,7 @@ import java.util.Locale;
 import java.util.Optional;
 
 @Mapper(componentModel = "spring")
-public interface WhiskyBaseMapper {
+public interface WhiskyMapper {
 
     DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yy");
 
@@ -24,14 +25,14 @@ public interface WhiskyBaseMapper {
     @Mapping(target = "gsi2sk", source = "whiskyDto", qualifiedByName = "mapGsi2Sk")
     @Mapping(target = "gsi3pk", source = "brand", qualifiedByName = "mapGsi3Pk")
     @Mapping(target = "gsi3sk", source = "id", qualifiedByName = "mapGsi3Sk")
-    @Mapping(target = "gsi4pk", expression = "java( WhiskyBase.GSI4_PK_PREFIX )")
+    @Mapping(target = "gsi4pk", expression = "java( pl.kat.ue.whiskyup.dynamometadata.AttributeValues.Whisky.GSI4_PARTITION_KEY )")
     @Mapping(target = "gsi4sk", source = "url", qualifiedByName = "mapGsi4Sk")
-    WhiskyBase mapDtoToModel(WhiskyDto whiskyDto);
+    Whisky mapDtoToModel(WhiskyDto whiskyDto);
 
-    WhiskyDto mapModelToDto(WhiskyBase whiskyBase);
+    WhiskyDto mapModelToDto(Whisky whisky);
 
     @BeforeMapping
-    default void generateIdFromAddedDate(WhiskyDto whiskyDto, @MappingTarget WhiskyBase.WhiskyBaseBuilder target) {
+    default void generateIdFromAddedDate(WhiskyDto whiskyDto, @MappingTarget Whisky.WhiskyBuilder target) {
         LocalDate addedDate = LocalDate.parse(whiskyDto.getAddedDate(), DATE_FORMAT);
         whiskyDto.setId(KsuidManager.newKsuid(addedDate));
         whiskyDto.setAddedDate(addedDate.toString());
@@ -39,47 +40,47 @@ public interface WhiskyBaseMapper {
 
     @Named("mapPk")
     default String mapPk(String id) {
-        return WhiskyBase.PK_PREFIX + id;
+        return AttributeValues.Whisky.PARTITION_KEY + id;
     }
 
     @Named("mapSk")
     default String mapSk(String id) {
-        return WhiskyBase.SK_PREFIX + id;
+        return AttributeValues.Whisky.SORT_KEY + id;
     }
 
     @Named("mapGsi1Pk")
     default String mapGsi1Pk(String addedDate) {
-        return WhiskyBase.GSI1_PK_PREFIX + addedDate;
+        return AttributeValues.Whisky.GSI1_PARTITION_KEY + addedDate;
     }
 
     @Named("mapGsi1Sk")
     default String mapGsi1Sk(String id) {
-        return WhiskyBase.GSI1_SK_PREFIX + id;
+        return AttributeValues.Whisky.GSI1_SORT_KEY + id;
     }
 
     @Named("mapGsi2Pk")
     default String mapGsi2Pk(Double price) {
-        return WhiskyBase.GSI2_PK_PREFIX + PriceRangeService.getPriceRange(price);
+        return AttributeValues.Whisky.GSI2_PARTITION_KEY + PriceRangeService.getPriceRange(price);
     }
 
     @Named("mapGsi2Sk")
     default String mapGsi2Sk(WhiskyDto whiskyDto) {
-        return String.format(Locale.ENGLISH, WhiskyBase.GSI2_SK_PREFIX, whiskyDto.getPrice())
+        return String.format(Locale.ENGLISH, AttributeValues.Whisky.GSI2_SORT_KEY, whiskyDto.getPrice())
                 + whiskyDto.getId();
     }
 
     @Named("mapGsi3Pk")
     default String mapGsi3Pk(String brand) {
-        return WhiskyBase.GSI3_PK_PREFIX + Optional.ofNullable(brand).orElse("").toLowerCase();
+        return AttributeValues.Whisky.GSI3_PARTITION_KEY + Optional.ofNullable(brand).orElse("").toLowerCase();
     }
 
     @Named("mapGsi3Sk")
     default String mapGsi3Sk(String id) {
-        return WhiskyBase.GSI3_SK_PREFIX + id;
+        return AttributeValues.Whisky.GSI3_SORT_KEY + id;
     }
 
     @Named("mapGsi4Sk")
     default String mapGsi4Sk(String url) {
-        return WhiskyBase.GSI4_SK_PREFIX + url;
+        return AttributeValues.Whisky.GSI4_SORT_KEY + url;
     }
 }

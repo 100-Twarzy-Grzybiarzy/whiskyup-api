@@ -3,8 +3,9 @@ package pl.kat.ue.whiskyup.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.kat.ue.whiskyup.dto.SearchWhiskiesDto;
+import pl.kat.ue.whiskyup.dynamometadata.AttributeNames;
 import pl.kat.ue.whiskyup.mapper.PaginationCursorMapper;
-import pl.kat.ue.whiskyup.mapper.WhiskyBaseMapper;
+import pl.kat.ue.whiskyup.mapper.WhiskyMapper;
 import pl.kat.ue.whiskyup.model.*;
 import pl.kat.ue.whiskyup.repository.WhiskyRepository;
 import software.amazon.awssdk.enhanced.dynamodb.model.Page;
@@ -22,19 +23,19 @@ import java.util.stream.Collectors;
 public class WhiskyService {
 
     private final WhiskyRepository whiskyRepository;
-    private final WhiskyBaseMapper whiskyBaseMapper;
+    private final WhiskyMapper whiskyMapper;
     private final PaginationCursorMapper paginationCursorMapper;
 
     public static final LocalDate OLDEST_SAVED_DATE = LocalDate.parse("2013-07-27");
     public static final Integer PAGE_LIMIT = 25;
-    public static final Integer EMPTY_DAYS_LIMIT = 60;
+    public static final Integer EMPTY_DAYS_LIMIT = 12 * 30;
 
     public WhiskiesFindResultDto getWhiskies(SearchWhiskiesDto searchDto) {
         Map<String, AttributeValue> exclusiveStartKey = paginationCursorMapper.mapFromCursor(searchDto.getPageCursor());
-        Page<WhiskyBase> page = getPageOfWhisky(searchDto, exclusiveStartKey);
+        Page<Whisky> page = getPageOfWhisky(searchDto, exclusiveStartKey);
 
         List<WhiskyDto> whiskies = page.items().stream()
-                .map(whiskyBaseMapper::mapModelToDto)
+                .map(whiskyMapper::mapModelToDto)
                 .collect(Collectors.toList());
 
         String pageCursor = paginationCursorMapper.mapToCursor(page.lastEvaluatedKey());
@@ -44,11 +45,11 @@ public class WhiskyService {
                 .pageCursor(pageCursor);
     }
 
-    private Page<WhiskyBase> getPageOfWhisky(SearchWhiskiesDto searchDto,
-                                             Map<String, AttributeValue> exclusiveStartKey) {
+    private Page<Whisky> getPageOfWhisky(SearchWhiskiesDto searchDto,
+                                         Map<String, AttributeValue> exclusiveStartKey) {
 
         FilterTypeDto filterType = searchDto.getFilter();
-        Page<WhiskyBase> page;
+        Page<Whisky> page;
 
         if (FilterTypeDto.BRAND.equals(filterType)) {
             page = getWhiskiesByBrand(searchDto, exclusiveStartKey);
@@ -63,22 +64,22 @@ public class WhiskyService {
         return page;
     }
 
-    private Page<WhiskyBase> getWhiskiesByBrand(SearchWhiskiesDto searchDto, Map<String, AttributeValue> exclusiveStartKey) {
+    private Page<Whisky> getWhiskiesByBrand(SearchWhiskiesDto searchDto, Map<String, AttributeValue> exclusiveStartKey) {
         return whiskyRepository.getWhiskiesByBrand(searchDto, exclusiveStartKey);
     }
 
-    private Page<WhiskyBase> getWhiskiesByPriceRange(SearchWhiskiesDto searchDto, Map<String, AttributeValue> exclusiveStartKey) {
+    private Page<Whisky> getWhiskiesByPriceRange(SearchWhiskiesDto searchDto, Map<String, AttributeValue> exclusiveStartKey) {
         return whiskyRepository.getWhiskiesByPriceRange(searchDto, exclusiveStartKey);
     }
 
-    private Page<WhiskyBase> getWhiskies(Map<String, AttributeValue> exclusiveStartKey) {
+    private Page<Whisky> getWhiskies(Map<String, AttributeValue> exclusiveStartKey) {
         LocalDate lastSeenDate = extractLastSeenDate(exclusiveStartKey);
-        List<WhiskyBase> fetched = new ArrayList<>();
+        List<Whisky> fetched = new ArrayList<>();
         int emptyDayCounter = 0;
 
         while (shouldFetchWhisky(fetched, lastSeenDate, emptyDayCounter)) {
             int limit = PAGE_LIMIT - fetched.size();
-            Page<WhiskyBase> page = whiskyRepository.getWhiskies(exclusiveStartKey, lastSeenDate, limit);
+            Page<Whisky> page = whiskyRepository.getWhiskies(exclusiveStartKey, lastSeenDate, limit);
             fetched.addAll(page.items());
             exclusiveStartKey = page.lastEvaluatedKey();
 
@@ -96,13 +97,14 @@ public class WhiskyService {
 
     private static LocalDate extractLastSeenDate(Map<String, AttributeValue> exclusiveStartKey) {
         String lastSeenDate = Optional.ofNullable(exclusiveStartKey)
-                .map(map -> map.get("GSI1PK").s().replace(WhiskyBase.GSI1_PK_PREFIX, ""))
+                .map(map -> map.get(AttributeNames.GSI1_PARTITION_KEY).s()
+                        .replace(AttributeNames.GSI1_PARTITION_KEY, ""))
                 .orElseGet(() -> LocalDate.now().toString());
 
         return LocalDate.parse(lastSeenDate);
     }
 
-    private static boolean shouldFetchWhisky(List<WhiskyBase> fetched,
+    private static boolean shouldFetchWhisky(List<Whisky> fetched,
                                              LocalDate lastSeenDate,
                                              int emptyDayCounter) {
 
@@ -111,16 +113,16 @@ public class WhiskyService {
                 emptyDayCounter < EMPTY_DAYS_LIMIT;
     }
 
-    public void addWhisky(WhiskyBase whiskyBase) {
-        whiskyRepository.addWhisky(whiskyBase);
+    public void addWhisky(Whisky whisky) {
+        whiskyRepository.addWhisky(whisky);
     }
 
     public UrlsFindResultDto getWhiskiesUrls(String pageCursor) {
         Map<String, AttributeValue> exclusiveStartKey = paginationCursorMapper.mapFromCursor(pageCursor);
-        Page<WhiskyBase> page = whiskyRepository.getWhiskiesUrls(exclusiveStartKey);
+        Page<Whisky> page = whiskyRepository.getWhiskiesUrls(exclusiveStartKey);
 
         List<String> urls = page.items().stream()
-                .map(WhiskyBase::getUrl)
+                .map(Whisky::getUrl)
                 .collect(Collectors.toList());
 
         String nextPageCursor = paginationCursorMapper.mapToCursor(page.lastEvaluatedKey());
