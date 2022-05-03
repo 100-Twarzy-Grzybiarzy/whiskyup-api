@@ -3,6 +3,23 @@ info:
   title: Whisky Up API
   version: 1.0.0
 paths:
+  /urls:
+    get:
+      summary: Get whiskies urls
+      operationId: getWhiskiesUrls
+      parameters:
+        - name: pageCursor
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UrlsFindResult'
   /brands:
     get:
       summary: Get brands
@@ -141,6 +158,15 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/UserWhisky"
+    UrlsFindResult:
+      type: object
+      properties:
+        pageCursor:
+          type: string
+        results:
+          type: array
+          items:
+            type: string
     Whisky:
       type: object
       properties:

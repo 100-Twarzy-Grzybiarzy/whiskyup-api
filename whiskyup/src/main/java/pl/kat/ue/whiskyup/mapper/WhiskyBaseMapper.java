@@ -24,6 +24,8 @@ public interface WhiskyBaseMapper {
     @Mapping(target = "gsi2sk", source = "whiskyDto", qualifiedByName = "mapGsi2Sk")
     @Mapping(target = "gsi3pk", source = "brand", qualifiedByName = "mapGsi3Pk")
     @Mapping(target = "gsi3sk", source = "id", qualifiedByName = "mapGsi3Sk")
+    @Mapping(target = "gsi4pk", expression = "java( WhiskyBase.GSI4_PK_PREFIX )")
+    @Mapping(target = "gsi4sk", source = "url", qualifiedByName = "mapGsi4Sk")
     WhiskyBase mapDtoToModel(WhiskyDto whiskyDto);
 
     WhiskyDto mapModelToDto(WhiskyBase whiskyBase);
@@ -74,5 +76,10 @@ public interface WhiskyBaseMapper {
     @Named("mapGsi3Sk")
     default String mapGsi3Sk(String id) {
         return WhiskyBase.GSI3_SK_PREFIX + id;
+    }
+
+    @Named("mapGsi4Sk")
+    default String mapGsi4Sk(String url) {
+        return WhiskyBase.GSI4_SK_PREFIX + url;
     }
 }

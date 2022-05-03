@@ -21,6 +21,8 @@ public class WhiskyBase {
     public final static String GSI2_SK_PREFIX = "PRICE#%.2f#WHISKY#";
     public final static String GSI3_PK_PREFIX = "BRAND#";
     public final static String GSI3_SK_PREFIX = "WHISKY#";
+    public final static String GSI4_PK_PREFIX = "URLS";
+    public final static String GSI4_SK_PREFIX = "URL#";
 
     @Getter(onMethod = @__({@DynamoDbPartitionKey, @DynamoDbAttribute("PK")}))
     private String pk;
@@ -45,6 +47,12 @@ public class WhiskyBase {
 
     @Getter(onMethod = @__({@DynamoDbSecondarySortKey(indexNames = "GSI3"), @DynamoDbAttribute("GSI3SK")}))
     private String gsi3sk;
+
+    @Getter(onMethod = @__({@DynamoDbSecondaryPartitionKey(indexNames = "GSI4"), @DynamoDbAttribute("GSI4PK")}))
+    private String gsi4pk;
+
+    @Getter(onMethod = @__({@DynamoDbSecondarySortKey(indexNames = "GSI4"), @DynamoDbAttribute("GSI4SK")}))
+    private String gsi4sk;
 
     @Getter(onMethod = @__({@DynamoDbAttribute("Id")}))
     private String id;

@@ -11,7 +11,9 @@ import software.amazon.awssdk.enhanced.dynamodb.model.*;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static pl.kat.ue.whiskyup.model.WhiskyBase.*;
 import static pl.kat.ue.whiskyup.service.WhiskyService.PAGE_LIMIT;
@@ -25,6 +27,7 @@ public class WhiskyRepository {
     private final DynamoDbIndex<WhiskyBase> gsi1Index;
     private final DynamoDbIndex<WhiskyBase> gsi2Index;
     private final DynamoDbIndex<WhiskyBase> gsi3Index;
+    private final DynamoDbIndex<WhiskyBase> gsi4Index;
     private final DynamoDbEnhancedClient dynamoClient;
 
     public WhiskyRepository(@Value("${cloud.aws.dynamodb.table.whiskyup}") String name,
@@ -37,6 +40,7 @@ public class WhiskyRepository {
         this.gsi1Index = whiskyTable.index("GSI1");
         this.gsi2Index = whiskyTable.index("GSI2");
         this.gsi3Index = whiskyTable.index("GSI3");
+        this.gsi4Index = whiskyTable.index("GSI4");
     }
 
     public void addWhisky(WhiskyBase whiskyBase) {
@@ -121,5 +125,46 @@ public class WhiskyRepository {
                         .exclusiveStartKey(exclusiveStartKey))
                 .iterator()
                 .next();
+    }
+
+    public Page<WhiskyBase> getWhiskiesUrls(Map<String, AttributeValue> exclusiveStartKey) {
+        QueryConditional queryWhiskiesByBrand = keyEqualTo(Key.builder()
+                .partitionValue(GSI4_PK_PREFIX)
+                .build());
+
+        return gsi4Index.query(q -> q.queryConditional(queryWhiskiesByBrand)
+                        .exclusiveStartKey(exclusiveStartKey)
+                        .attributesToProject("Url"))
+                .iterator()
+                .next();
+    }
+
+    public WhiskyBase getWhiskyByUrl(String url) {
+        QueryConditional queryWhiskyByUrl = keyEqualTo(Key.builder()
+                .partitionValue(GSI4_PK_PREFIX)
+                .sortValue(GSI4_SK_PREFIX + url)
+                .build());
+
+        List<WhiskyBase> whisky = gsi4Index.query(q -> q.queryConditional(queryWhiskyByUrl)
+                        .attributesToProject("Id"))
+                .iterator()
+                .next()
+                .items();
+
+        return !whisky.isEmpty() ? whisky.get(0) : null;
+    }
+
+    public boolean deleteWhisky(String whiskyUrl) {
+        return Optional.ofNullable(getWhiskyByUrl(whiskyUrl))
+                .map(whiskyToDelete -> {
+                    String id = whiskyToDelete.getId();
+                    Key key = Key.builder()
+                            .partitionValue(PK_PREFIX + id)
+                            .sortValue(SK_PREFIX + id)
+                            .build();
+                    whiskyTable.deleteItem(key);
+                    return true;
+                })
+                .orElse(false);
     }
 }
