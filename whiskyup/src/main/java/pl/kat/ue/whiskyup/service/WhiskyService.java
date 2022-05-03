@@ -5,10 +5,7 @@ import org.springframework.stereotype.Service;
 import pl.kat.ue.whiskyup.dto.SearchWhiskiesDto;
 import pl.kat.ue.whiskyup.mapper.PaginationCursorMapper;
 import pl.kat.ue.whiskyup.mapper.WhiskyBaseMapper;
-import pl.kat.ue.whiskyup.model.FilterTypeDto;
-import pl.kat.ue.whiskyup.model.WhiskiesFindResultDto;
-import pl.kat.ue.whiskyup.model.WhiskyBase;
-import pl.kat.ue.whiskyup.model.WhiskyDto;
+import pl.kat.ue.whiskyup.model.*;
 import pl.kat.ue.whiskyup.repository.WhiskyRepository;
 import software.amazon.awssdk.enhanced.dynamodb.model.Page;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
@@ -116,5 +113,20 @@ public class WhiskyService {
 
     public void addWhisky(WhiskyBase whiskyBase) {
         whiskyRepository.addWhisky(whiskyBase);
+    }
+
+    public UrlsFindResultDto getWhiskiesUrls(String pageCursor){
+        Map<String, AttributeValue> exclusiveStartKey = paginationCursorMapper.mapFromCursor(pageCursor);
+        Page<WhiskyBase> page = whiskyRepository.getWhiskiesUrls(exclusiveStartKey);
+
+        List<String> urls = page.items().stream()
+                .map(WhiskyBase::getUrl)
+                .collect(Collectors.toList());
+
+        String nextPageCursor = paginationCursorMapper.mapToCursor(page.lastEvaluatedKey());
+
+        return new UrlsFindResultDto()
+                .results(urls)
+                .pageCursor(nextPageCursor);
     }
 }

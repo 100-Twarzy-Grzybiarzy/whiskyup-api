@@ -36,7 +36,8 @@ class WhiskyMapperTest {
         WhiskyDto whiskyDto = new WhiskyDto()
                 .brand("Aberlour")
                 .price(120.20)
-                .addedDate("30.04.22");
+                .addedDate("30.04.22")
+                .url("whiskybase.com/market/whisky/220455");
 
         //when
         try (MockedStatic<KsuidManager> mockedKsuid = Mockito.mockStatic(KsuidManager.class)) {
@@ -54,5 +55,7 @@ class WhiskyMapperTest {
         Assertions.assertEquals("PRICE#120.20#WHISKY#1HCpXwx2EK9oYluWbacgeCnFcLf", whiskyBase.getGsi2sk());
         Assertions.assertEquals("BRAND#aberlour", whiskyBase.getGsi3pk());
         Assertions.assertEquals("WHISKY#1HCpXwx2EK9oYluWbacgeCnFcLf", whiskyBase.getGsi3sk());
+        Assertions.assertEquals("URLS", whiskyBase.getGsi4pk());
+        Assertions.assertEquals("URL#whiskybase.com/market/whisky/220455", whiskyBase.getGsi4sk());
     }
 }

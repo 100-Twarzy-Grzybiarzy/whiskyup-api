@@ -36,6 +36,12 @@ module "whiskyup_table" {
     }, {
       name = "GSI3SK"
       type = "S"
+    }, {
+      name = "GSI4PK"
+      type = "S"
+    }, {
+      name = "GSI4SK"
+      type = "S"
     }
   ]
 
@@ -55,6 +61,12 @@ module "whiskyup_table" {
       partition_key = "GSI3PK",
       sort_key = "GSI3SK",
       projection_type = "ALL"
+    }, {
+      name = "GSI4",
+      partition_key = "GSI4PK",
+      sort_key = "GSI4SK",
+      projection_type = "INCLUDE",
+      non_key_attributes = ["Url", "Id"]
     }
   ]
 

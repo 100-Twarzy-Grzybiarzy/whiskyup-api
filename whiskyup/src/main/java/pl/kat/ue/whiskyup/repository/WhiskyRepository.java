@@ -25,6 +25,7 @@ public class WhiskyRepository {
     private final DynamoDbIndex<WhiskyBase> gsi1Index;
     private final DynamoDbIndex<WhiskyBase> gsi2Index;
     private final DynamoDbIndex<WhiskyBase> gsi3Index;
+    private final DynamoDbIndex<WhiskyBase> gsi4Index;
     private final DynamoDbEnhancedClient dynamoClient;
 
     public WhiskyRepository(@Value("${cloud.aws.dynamodb.table.whiskyup}") String name,
@@ -37,6 +38,7 @@ public class WhiskyRepository {
         this.gsi1Index = whiskyTable.index("GSI1");
         this.gsi2Index = whiskyTable.index("GSI2");
         this.gsi3Index = whiskyTable.index("GSI3");
+        this.gsi4Index = whiskyTable.index("GSI4");
     }
 
     public void addWhisky(WhiskyBase whiskyBase) {
@@ -119,6 +121,18 @@ public class WhiskyRepository {
                         .limit(PAGE_LIMIT)
                         .scanIndexForward(shouldScanForward(searchDto))
                         .exclusiveStartKey(exclusiveStartKey))
+                .iterator()
+                .next();
+    }
+
+    public Page<WhiskyBase> getWhiskiesUrls(Map<String, AttributeValue> exclusiveStartKey) {
+        QueryConditional queryWhiskiesByBrand = keyEqualTo(Key.builder()
+                .partitionValue(GSI4_PK_PREFIX)
+                .build());
+
+        return gsi4Index.query(q -> q.queryConditional(queryWhiskiesByBrand)
+                        .exclusiveStartKey(exclusiveStartKey)
+                        .attributesToProject("Url"))
                 .iterator()
                 .next();
     }
