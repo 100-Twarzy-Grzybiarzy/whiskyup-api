@@ -1,4 +1,4 @@
-package pl.kat.ue.whiskyup.utils;
+package pl.kat.ue.whiskyup.utils.listener;
 
 import io.awspring.cloud.messaging.listener.annotation.SqsListener;
 import lombok.RequiredArgsConstructor;

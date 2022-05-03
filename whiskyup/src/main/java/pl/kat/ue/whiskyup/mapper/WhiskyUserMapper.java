@@ -1,9 +1,9 @@
 package pl.kat.ue.whiskyup.mapper;
 
-import com.github.ksuid.Ksuid;
 import org.mapstruct.*;
 import pl.kat.ue.whiskyup.model.UserWhiskyDto;
 import pl.kat.ue.whiskyup.model.WhiskyUser;
+import pl.kat.ue.whiskyup.utils.manager.KsuidManager;
 
 @Mapper(componentModel = "spring")
 public interface WhiskyUserMapper {
@@ -19,7 +19,7 @@ public interface WhiskyUserMapper {
 
     @BeforeMapping
     default void generateWhiskyId(UserWhiskyDto userWhiskyDto, @MappingTarget WhiskyUser.WhiskyUserBuilder target) {
-        userWhiskyDto.setId(Ksuid.newKsuid().toString());
+        userWhiskyDto.setId(KsuidManager.newKsuid());
     }
 
     @Named("mapPk")

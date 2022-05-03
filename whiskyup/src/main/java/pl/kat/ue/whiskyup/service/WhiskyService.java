@@ -2,7 +2,7 @@ package pl.kat.ue.whiskyup.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import pl.kat.ue.whiskyup.dto.FilterWhiskiesDto;
+import pl.kat.ue.whiskyup.dto.SearchWhiskiesDto;
 import pl.kat.ue.whiskyup.mapper.PaginationCursorMapper;
 import pl.kat.ue.whiskyup.mapper.WhiskyBaseMapper;
 import pl.kat.ue.whiskyup.model.FilterTypeDto;
@@ -32,9 +32,9 @@ public class WhiskyService {
     public static final Integer PAGE_LIMIT = 25;
     public static final Integer EMPTY_DAYS_LIMIT = 60;
 
-    public WhiskiesFindResultDto getWhiskies(FilterWhiskiesDto filterDto) {
-        Map<String, AttributeValue> exclusiveStartKey = paginationCursorMapper.mapFromCursor(filterDto.getPageCursor());
-        Page<WhiskyBase> page = getPageOfWhisky(filterDto, exclusiveStartKey);
+    public WhiskiesFindResultDto getWhiskies(SearchWhiskiesDto searchDto) {
+        Map<String, AttributeValue> exclusiveStartKey = paginationCursorMapper.mapFromCursor(searchDto.getPageCursor());
+        Page<WhiskyBase> page = getPageOfWhisky(searchDto, exclusiveStartKey);
 
         List<WhiskyDto> whiskies = page.items().stream()
                 .map(whiskyBaseMapper::mapModelToDto)
@@ -47,18 +47,17 @@ public class WhiskyService {
                 .pageCursor(pageCursor);
     }
 
-    private Page<WhiskyBase> getPageOfWhisky(FilterWhiskiesDto filterDto,
+    private Page<WhiskyBase> getPageOfWhisky(SearchWhiskiesDto searchDto,
                                              Map<String, AttributeValue> exclusiveStartKey) {
 
-        FilterTypeDto filterType = filterDto.getFilter();
-        String filterValue = filterDto.getValue();
+        FilterTypeDto filterType = searchDto.getFilter();
         Page<WhiskyBase> page;
 
         if (FilterTypeDto.BRAND.equals(filterType)) {
-            page = getWhiskiesByBrand(filterValue, exclusiveStartKey);
+            page = getWhiskiesByBrand(searchDto, exclusiveStartKey);
 
         } else if (FilterTypeDto.PRICERANGE.equals(filterType)) {
-            page = getWhiskiesByPriceRange(filterValue, exclusiveStartKey);
+            page = getWhiskiesByPriceRange(searchDto, exclusiveStartKey);
 
         } else {
             page = getWhiskies(exclusiveStartKey);
@@ -67,12 +66,12 @@ public class WhiskyService {
         return page;
     }
 
-    private Page<WhiskyBase> getWhiskiesByBrand(String brand, Map<String, AttributeValue> exclusiveStartKey) {
-        return whiskyRepository.getWhiskiesByBrand(brand, exclusiveStartKey);
+    private Page<WhiskyBase> getWhiskiesByBrand(SearchWhiskiesDto searchDto, Map<String, AttributeValue> exclusiveStartKey) {
+        return whiskyRepository.getWhiskiesByBrand(searchDto, exclusiveStartKey);
     }
 
-    private Page<WhiskyBase> getWhiskiesByPriceRange(String priceRange, Map<String, AttributeValue> exclusiveStartKey) {
-        return whiskyRepository.getWhiskiesByPriceRange(priceRange, exclusiveStartKey);
+    private Page<WhiskyBase> getWhiskiesByPriceRange(SearchWhiskiesDto searchDto, Map<String, AttributeValue> exclusiveStartKey) {
+        return whiskyRepository.getWhiskiesByPriceRange(searchDto, exclusiveStartKey);
     }
 
     private Page<WhiskyBase> getWhiskies(Map<String, AttributeValue> exclusiveStartKey) {

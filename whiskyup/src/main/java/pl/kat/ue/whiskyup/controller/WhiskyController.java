@@ -5,8 +5,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import pl.kat.ue.whiskyup.api.WhiskiesApi;
-import pl.kat.ue.whiskyup.dto.FilterWhiskiesDto;
+import pl.kat.ue.whiskyup.dto.SearchWhiskiesDto;
 import pl.kat.ue.whiskyup.model.FilterTypeDto;
+import pl.kat.ue.whiskyup.model.SortTypeDto;
 import pl.kat.ue.whiskyup.model.WhiskiesFindResultDto;
 import pl.kat.ue.whiskyup.service.WhiskyService;
 
@@ -19,12 +20,14 @@ public class WhiskyController implements WhiskiesApi {
     @Override
     public ResponseEntity<WhiskiesFindResultDto> getWhiskies(@RequestParam(required = false) String pageCursor,
                                                              @RequestParam(required = false) FilterTypeDto filter,
-                                                             @RequestParam(required = false) String value) {
+                                                             @RequestParam(required = false) String value,
+                                                             @RequestParam(required = false) SortTypeDto sort) {
 
-        FilterWhiskiesDto filterDto = FilterWhiskiesDto.builder()
+        SearchWhiskiesDto filterDto = SearchWhiskiesDto.builder()
                 .pageCursor(pageCursor)
                 .filter(filter)
                 .value(value)
+                .sort(sort)
                 .build();
 
         WhiskiesFindResultDto result = whiskyService.getWhiskies(filterDto);

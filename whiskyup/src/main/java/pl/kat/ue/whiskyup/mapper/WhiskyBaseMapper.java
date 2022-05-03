@@ -1,10 +1,10 @@
 package pl.kat.ue.whiskyup.mapper;
 
-import com.github.ksuid.Ksuid;
 import org.mapstruct.*;
 import pl.kat.ue.whiskyup.model.WhiskyBase;
 import pl.kat.ue.whiskyup.model.WhiskyDto;
 import pl.kat.ue.whiskyup.service.PriceRangeService;
+import pl.kat.ue.whiskyup.utils.manager.KsuidManager;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -29,9 +29,10 @@ public interface WhiskyBaseMapper {
     WhiskyDto mapModelToDto(WhiskyBase whiskyBase);
 
     @BeforeMapping
-    default void generateId(WhiskyDto whiskyDto, @MappingTarget WhiskyBase.WhiskyBaseBuilder target) {
-        whiskyDto.setId(Ksuid.newKsuid().toString());
-        whiskyDto.setAddedDate(LocalDate.parse(whiskyDto.getAddedDate(), DATE_FORMAT).toString());
+    default void generateIdFromAddedDate(WhiskyDto whiskyDto, @MappingTarget WhiskyBase.WhiskyBaseBuilder target) {
+        LocalDate addedDate = LocalDate.parse(whiskyDto.getAddedDate(), DATE_FORMAT);
+        whiskyDto.setId(KsuidManager.newKsuid(addedDate));
+        whiskyDto.setAddedDate(addedDate.toString());
     }
 
     @Named("mapPk")

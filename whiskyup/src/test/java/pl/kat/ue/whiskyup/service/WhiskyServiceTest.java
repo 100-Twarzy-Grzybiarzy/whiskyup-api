@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
-import pl.kat.ue.whiskyup.dto.FilterWhiskiesDto;
+import pl.kat.ue.whiskyup.dto.SearchWhiskiesDto;
 import pl.kat.ue.whiskyup.mapper.PaginationCursorMapper;
 import pl.kat.ue.whiskyup.mapper.WhiskyBaseMapperImpl;
 import pl.kat.ue.whiskyup.model.FilterTypeDto;
@@ -51,7 +51,7 @@ class WhiskyServiceTest {
     @Test
     void shouldGetWhiskiesFromOneDay() {
         //given
-        FilterWhiskiesDto filterDto = FilterWhiskiesDto.builder().build();
+        SearchWhiskiesDto filterDto = SearchWhiskiesDto.builder().build();
         LocalDate localDate = LocalDate.parse("2022-05-02");
         WhiskiesFindResultDto actual;
 
@@ -75,7 +75,7 @@ class WhiskyServiceTest {
     @Test
     void shouldGetWhiskiesFromTwoDays() {
         //given
-        FilterWhiskiesDto filterDto = FilterWhiskiesDto.builder().build();
+        SearchWhiskiesDto filterDto = SearchWhiskiesDto.builder().build();
         LocalDate localDate = LocalDate.parse("2022-05-02");
         WhiskiesFindResultDto actual;
 
@@ -116,53 +116,47 @@ class WhiskyServiceTest {
     @Test
     void shouldGetWhiskiesFilteredByBrandName() {
         //given
-        FilterWhiskiesDto filterDto = FilterWhiskiesDto.builder()
+        SearchWhiskiesDto searchDto = SearchWhiskiesDto.builder()
                 .pageCursor(null)
                 .filter(FilterTypeDto.BRAND)
                 .value("Ao")
                 .build();
 
         //when
-        when(whiskyRepository.getWhiskiesByBrand(eq("Ao"), anyMap()))
+        when(whiskyRepository.getWhiskiesByBrand(eq(searchDto), anyMap()))
                 .thenReturn(getPageWhereBrandIsAo());
 
-        WhiskiesFindResultDto actual = whiskyService.getWhiskies(filterDto);
+        WhiskiesFindResultDto actual = whiskyService.getWhiskies(searchDto);
 
         //then
-        Assertions.assertEquals(
-                getPageWhereBrandIsAo().items().size(),
-                actual.getResults().size()
-        );
+        Assertions.assertEquals(getPageWhereBrandIsAo().items().size(), actual.getResults().size());
     }
 
     @Test
     void shouldGetWhiskiesFilteredByPriceRange() {
         //given
-        FilterWhiskiesDto filterDto = FilterWhiskiesDto.builder()
+        SearchWhiskiesDto searchDto = SearchWhiskiesDto.builder()
                 .pageCursor(null)
                 .filter(FilterTypeDto.PRICERANGE)
                 .value("800-1600")
                 .build();
 
         //when
-        when(whiskyRepository.getWhiskiesByPriceRange(eq("800-1600"), anyMap()))
+        when(whiskyRepository.getWhiskiesByPriceRange(eq(searchDto), anyMap()))
                 .thenReturn(getPageWherePriceIdBetween800And1600());
 
-        WhiskiesFindResultDto actual = whiskyService.getWhiskies(filterDto);
+        WhiskiesFindResultDto actual = whiskyService.getWhiskies(searchDto);
 
         //then
-        Assertions.assertEquals(
-                getPageWherePriceIdBetween800And1600().items().size(),
-                actual.getResults().size()
-        );
+        Assertions.assertEquals(getPageWhereBrandIsAo().items().size(), actual.getResults().size());
     }
 
     private static Page<WhiskyBase> getPageWhereBrandIsAo() {
         List<WhiskyBase> whiskies = List.of(
-                WhiskyBase.builder().brand("Ao").price(200.0).build(),
-                WhiskyBase.builder().brand("Ao").price(1430.0).build(),
-                WhiskyBase.builder().brand("Ao").price(1200.0).build(),
-                WhiskyBase.builder().brand("Ao").price(801.0).build()
+                WhiskyBase.builder().brand("Ao").addedDate(LocalDate.parse("2022-04-03")).price(200.0).build(),
+                WhiskyBase.builder().brand("Ao").addedDate(LocalDate.parse("2022-05-04")).price(801.0).build(),
+                WhiskyBase.builder().brand("Ao").addedDate(LocalDate.parse("2022-05-01")).price(1430.0).build(),
+                WhiskyBase.builder().brand("Ao").addedDate(LocalDate.parse("2022-05-02")).price(1200.0).build()
         );
         return Page.create(whiskies);
     }

@@ -49,6 +49,11 @@ paths:
           required: false
           schema:
             type: string
+        - name: sort
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/SortType"
       responses:
         '200':
           description: ''
@@ -247,3 +252,8 @@ components:
       enum:
         - priceRange
         - brand
+    SortType:
+      type: string
+      enum:
+        - asc
+        - desc

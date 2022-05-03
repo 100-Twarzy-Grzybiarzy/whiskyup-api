@@ -1,4 +1,4 @@
-package pl.kat.ue.whiskyup.utils;
+package pl.kat.ue.whiskyup.utils.manager;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

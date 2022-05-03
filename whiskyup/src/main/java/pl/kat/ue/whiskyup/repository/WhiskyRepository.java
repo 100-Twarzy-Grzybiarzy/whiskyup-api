@@ -2,6 +2,8 @@ package pl.kat.ue.whiskyup.repository;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
+import pl.kat.ue.whiskyup.dto.SearchWhiskiesDto;
+import pl.kat.ue.whiskyup.model.SortTypeDto;
 import pl.kat.ue.whiskyup.model.WhiskyBase;
 import software.amazon.awssdk.enhanced.dynamodb.*;
 import software.amazon.awssdk.enhanced.dynamodb.model.Page;
@@ -56,25 +58,38 @@ public class WhiskyRepository {
         whiskyTable.putItem(putWhiskyRequest);
     }
 
-    public Page<WhiskyBase> getWhiskiesByBrand(String brand, Map<String, AttributeValue> exclusiveStartKey) {
+    public Page<WhiskyBase> getWhiskiesByBrand(SearchWhiskiesDto searchDto, Map<String, AttributeValue> exclusiveStartKey) {
         QueryConditional queryWhiskiesByBrand = keyEqualTo(Key.builder()
-                .partitionValue(GSI3_PK_PREFIX + brand.toLowerCase())
+                .partitionValue(GSI3_PK_PREFIX + searchDto.getValue().toLowerCase())
                 .build());
 
         return gsi3Index.query(q -> q.queryConditional(queryWhiskiesByBrand)
                         .limit(PAGE_LIMIT)
+                        .scanIndexForward(shouldScanForward(searchDto))
                         .exclusiveStartKey(exclusiveStartKey))
                 .iterator()
                 .next();
     }
 
-    public Page<WhiskyBase> getWhiskiesByPriceRange(String priceRange, Map<String, AttributeValue> exclusiveStartKey) {
+    private static boolean shouldScanForward(SearchWhiskiesDto searchDto) {
+        SortTypeDto sortType = searchDto.getSort();
+        if (SortTypeDto.DESC.equals(sortType)) {
+            return false;
+        } else if (SortTypeDto.ASC.equals(sortType)) {
+            return true;
+        } else {
+            return true;
+        }
+    }
+
+    public Page<WhiskyBase> getWhiskiesByPriceRange(SearchWhiskiesDto searchDto, Map<String, AttributeValue> exclusiveStartKey) {
         QueryConditional queryWhiskiesByBrand = keyEqualTo(Key.builder()
-                .partitionValue(GSI2_PK_PREFIX + priceRange)
+                .partitionValue(GSI2_PK_PREFIX + searchDto.getValue().toLowerCase())
                 .build());
 
         return gsi2Index.query(q -> q.queryConditional(queryWhiskiesByBrand)
                         .limit(PAGE_LIMIT)
+                        .scanIndexForward(shouldScanForward(searchDto))
                         .exclusiveStartKey(exclusiveStartKey))
                 .iterator()
                 .next();
