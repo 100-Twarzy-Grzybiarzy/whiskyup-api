@@ -1,6 +1,6 @@
 package pl.kat.ue.whiskyup.mapper;
 
-import com.github.ksuid.Ksuid;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
@@ -8,6 +8,7 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import pl.kat.ue.whiskyup.model.UserWhiskyDto;
 import pl.kat.ue.whiskyup.model.WhiskyUser;
+import pl.kat.ue.whiskyup.utils.manager.KsuidManager;
 
 class WhiskyUserMapperTest {
 
@@ -18,11 +19,10 @@ class WhiskyUserMapperTest {
         //given
         WhiskyUser whiskyUser;
         UserWhiskyDto userWhiskyDto = new UserWhiskyDto();
-        Ksuid id = Ksuid.fromString("1HCpXwx2EK9oYluWbacgeCnFcLf");
 
         //when
-        try (MockedStatic<Ksuid> mockedKsuid = Mockito.mockStatic(Ksuid.class)) {
-            mockedKsuid.when(Ksuid::newKsuid).thenReturn(id);
+        try (MockedStatic<KsuidManager> mockedKsuid = Mockito.mockStatic(KsuidManager.class)) {
+            mockedKsuid.when(KsuidManager::newKsuid).thenReturn("1HCpXwx2EK9oYluWbacgeCnFcLf");
             whiskyUser = whiskyUserMapper.mapDtoToModel("abc123def", userWhiskyDto);
         }
 

@@ -3,12 +3,11 @@ package pl.kat.ue.whiskyup.repository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import pl.kat.ue.whiskyup.dto.SearchWhiskiesDto;
+import pl.kat.ue.whiskyup.model.Brands;
 import pl.kat.ue.whiskyup.model.SortTypeDto;
 import pl.kat.ue.whiskyup.model.WhiskyBase;
 import software.amazon.awssdk.enhanced.dynamodb.*;
-import software.amazon.awssdk.enhanced.dynamodb.model.Page;
-import software.amazon.awssdk.enhanced.dynamodb.model.PutItemEnhancedRequest;
-import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
+import software.amazon.awssdk.enhanced.dynamodb.model.*;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 import java.time.LocalDate;
@@ -21,18 +20,58 @@ import static software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional.ke
 @Repository
 public class WhiskyRepository {
 
+    private final BrandRepository brandRepository;
     private final DynamoDbTable<WhiskyBase> whiskyTable;
     private final DynamoDbIndex<WhiskyBase> gsi1Index;
     private final DynamoDbIndex<WhiskyBase> gsi2Index;
     private final DynamoDbIndex<WhiskyBase> gsi3Index;
+    private final DynamoDbEnhancedClient dynamoClient;
 
     public WhiskyRepository(@Value("${cloud.aws.dynamodb.table.whiskyup}") String name,
-                            DynamoDbEnhancedClient dynamoDbClient) {
+                            DynamoDbEnhancedClient dynamoDbClient,
+                            BrandRepository brandRepository) {
 
+        this.dynamoClient = dynamoDbClient;
         this.whiskyTable = dynamoDbClient.table(name, TableSchema.fromBean(WhiskyBase.class));
+        this.brandRepository = brandRepository;
         this.gsi1Index = whiskyTable.index("GSI1");
         this.gsi2Index = whiskyTable.index("GSI2");
         this.gsi3Index = whiskyTable.index("GSI3");
+    }
+
+    public void addWhisky(WhiskyBase whiskyBase) {
+        dynamoClient.transactWriteItems(TransactWriteItemsEnhancedRequest.builder()
+                .addUpdateItem(brandRepository.brandTable, updateBrandsRequest(whiskyBase.getBrand()))
+                .addPutItem(whiskyTable, putWhiskyBaseRequest(whiskyBase))
+                .build()
+        );
+    }
+
+    private TransactUpdateItemEnhancedRequest<Brands> updateBrandsRequest(String brand) {
+        Brands brands = brandRepository.getBrands();
+        brands.addBrand(parseBrand(brand));
+        return TransactUpdateItemEnhancedRequest.builder(Brands.class)
+                .item(brands)
+                .conditionExpression(Expression.builder()
+                        .expression("attribute_exists(PK)")
+                        .build())
+                .build();
+    }
+
+    private String parseBrand(String brand) {
+        if (brand != null && brand.length() > 2) {
+            brand = brand.substring(0, 1).toUpperCase() + brand.substring(1).toLowerCase();
+        }
+        return brand;
+    }
+
+    private TransactPutItemEnhancedRequest<WhiskyBase> putWhiskyBaseRequest(WhiskyBase whiskyBase) {
+        return TransactPutItemEnhancedRequest.builder(WhiskyBase.class)
+                .item(whiskyBase)
+                .conditionExpression(Expression.builder()
+                        .expression("attribute_not_exists(PK)")
+                        .build())
+                .build();
     }
 
     public Page<WhiskyBase> getWhiskies(Map<String, AttributeValue> exclusiveStartKey, LocalDate lastSeenDate, int limit) {
@@ -45,17 +84,6 @@ public class WhiskyRepository {
                         .exclusiveStartKey(exclusiveStartKey))
                 .iterator()
                 .next();
-    }
-
-    public void addWhisky(WhiskyBase whiskyBase) {
-        PutItemEnhancedRequest<WhiskyBase> putWhiskyRequest = PutItemEnhancedRequest.builder(WhiskyBase.class)
-                .item(whiskyBase)
-                .conditionExpression(Expression.builder()
-                        .expression("attribute_not_exists(PK)")
-                        .build())
-                .build();
-
-        whiskyTable.putItem(putWhiskyRequest);
     }
 
     public Page<WhiskyBase> getWhiskiesByBrand(SearchWhiskiesDto searchDto, Map<String, AttributeValue> exclusiveStartKey) {
