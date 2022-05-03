@@ -11,7 +11,9 @@ import software.amazon.awssdk.enhanced.dynamodb.model.*;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static pl.kat.ue.whiskyup.model.WhiskyBase.*;
 import static pl.kat.ue.whiskyup.service.WhiskyService.PAGE_LIMIT;
@@ -135,5 +137,34 @@ public class WhiskyRepository {
                         .attributesToProject("Url"))
                 .iterator()
                 .next();
+    }
+
+    public WhiskyBase getWhiskyByUrl(String url) {
+        QueryConditional queryWhiskyByUrl = keyEqualTo(Key.builder()
+                .partitionValue(GSI4_PK_PREFIX)
+                .sortValue(GSI4_SK_PREFIX + url)
+                .build());
+
+        List<WhiskyBase> whisky = gsi4Index.query(q -> q.queryConditional(queryWhiskyByUrl)
+                        .attributesToProject("Id"))
+                .iterator()
+                .next()
+                .items();
+
+        return !whisky.isEmpty() ? whisky.get(0) : null;
+    }
+
+    public boolean deleteWhisky(String whiskyUrl) {
+        return Optional.ofNullable(getWhiskyByUrl(whiskyUrl))
+                .map(whiskyToDelete -> {
+                    String id = whiskyToDelete.getId();
+                    Key key = Key.builder()
+                            .partitionValue(PK_PREFIX + id)
+                            .sortValue(SK_PREFIX + id)
+                            .build();
+                    whiskyTable.deleteItem(key);
+                    return true;
+                })
+                .orElse(false);
     }
 }

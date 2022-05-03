@@ -115,7 +115,7 @@ public class WhiskyService {
         whiskyRepository.addWhisky(whiskyBase);
     }
 
-    public UrlsFindResultDto getWhiskiesUrls(String pageCursor){
+    public UrlsFindResultDto getWhiskiesUrls(String pageCursor) {
         Map<String, AttributeValue> exclusiveStartKey = paginationCursorMapper.mapFromCursor(pageCursor);
         Page<WhiskyBase> page = whiskyRepository.getWhiskiesUrls(exclusiveStartKey);
 
@@ -128,5 +128,9 @@ public class WhiskyService {
         return new UrlsFindResultDto()
                 .results(urls)
                 .pageCursor(nextPageCursor);
+    }
+
+    public boolean deleteWhisky(String whiskyUrl) {
+        return whiskyRepository.deleteWhisky(whiskyUrl);
     }
 }

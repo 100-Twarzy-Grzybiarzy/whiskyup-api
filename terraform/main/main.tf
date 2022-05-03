@@ -73,9 +73,9 @@ module "whiskyup_table" {
   tags = var.tags
 }
 
-module "new_whisky_queue" {
+module "whisky_queue" {
   source = "../modules/sqs_queue"
-  name   = "new-whisky"
+  name   = "whisky"
   tags   = var.tags
 }
 

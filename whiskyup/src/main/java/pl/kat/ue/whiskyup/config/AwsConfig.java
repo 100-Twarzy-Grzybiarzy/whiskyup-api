@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
+import org.springframework.messaging.handler.annotation.support.HeaderMethodArgumentResolver;
 import org.springframework.messaging.handler.annotation.support.PayloadMethodArgumentResolver;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
@@ -43,8 +44,10 @@ public class AwsConfig {
         MappingJackson2MessageConverter messageConverter = new MappingJackson2MessageConverter();
         messageConverter.setStrictContentTypeMatch(false);
         messageConverter.setSerializedPayloadClass(String.class);
-        factory.setArgumentResolvers(List.of(new PayloadMethodArgumentResolver(messageConverter)));
+        factory.setArgumentResolvers(List.of(
+                new PayloadMethodArgumentResolver(messageConverter, null, false),
+                new HeaderMethodArgumentResolver(null, null)
+        ));
         return factory;
     }
-
 }
