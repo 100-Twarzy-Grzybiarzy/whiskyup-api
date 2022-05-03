@@ -4,26 +4,10 @@ module "iam" {
   tags   = var.tags
 }
 
-module "whiskybase_table" {
+module "whiskyup_table" {
   source = "../modules/dynamodb_table"
 
-  name          = "WhiskyBase"
-  partition_key = "WhiskyUrl"
-
-  attributes = [
-    {
-      name = "WhiskyUrl"
-      type = "S"
-    }
-  ]
-
-  tags = var.tags
-}
-
-module "user_table" {
-  source = "../modules/dynamodb_table"
-
-  name          = "User"
+  name          = "WhiskyUp"
   partition_key = "PK"
   sort_key      = "SK"
 
@@ -34,6 +18,43 @@ module "user_table" {
     }, {
       name = "SK"
       type = "S"
+    }, {
+      name = "GSI1PK"
+      type = "S"
+    }, {
+      name = "GSI1SK"
+      type = "S"
+    }, {
+      name = "GSI2PK"
+      type = "S"
+    }, {
+      name = "GSI2SK"
+      type = "S"
+    }, {
+      name = "GSI3PK"
+      type = "S"
+    }, {
+      name = "GSI3SK"
+      type = "S"
+    }
+  ]
+
+  global_secondary_indexes = [
+    {
+      name = "GSI1",
+      partition_key = "GSI1PK",
+      sort_key = "GSI1SK",
+      projection_type = "ALL"
+    }, {
+      name = "GSI2",
+      partition_key = "GSI2PK",
+      sort_key = "GSI2SK",
+      projection_type = "ALL"
+    }, {
+      name = "GSI3",
+      partition_key = "GSI3PK",
+      sort_key = "GSI3SK",
+      projection_type = "ALL"
     }
   ]
 

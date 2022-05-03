@@ -6,15 +6,19 @@ import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortKey;
 
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Setter
 @DynamoDbBean
-public class User {
+public class Brands {
 
-    public final static String PK_PREFIX = "USER#";
-    public final static String SK_PREFIX = "USER#";
+    public final static String PK = "BRANDS";
+    public final static String SK = "BRANDS";
 
     @Getter(onMethod = @__({@DynamoDbPartitionKey, @DynamoDbAttribute("PK")}))
     private String pk;
@@ -22,16 +26,13 @@ public class User {
     @Getter(onMethod = @__({@DynamoDbSortKey, @DynamoDbAttribute("SK")}))
     private String sk;
 
-    @Getter(onMethod = @__({@DynamoDbAttribute("Id")}))
-    private String id;
+    @Getter(onMethod = @__({@DynamoDbAttribute("Brands")}))
+    private Set<String> values;
 
-    @Getter(onMethod = @__({@DynamoDbAttribute("Email")}))
-    private String email;
-
-    @Getter(onMethod = @__({@DynamoDbAttribute("Name")}))
-    private String name;
-
-    @Getter(onMethod = @__({@DynamoDbAttribute("Distillery")}))
-    private String distillery;
-
+    public void addBrand(String brand) {
+        if (Objects.isNull(values)) {
+            values = new HashSet<>();
+        }
+        values.add(brand);
+    }
 }

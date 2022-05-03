@@ -5,7 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import pl.kat.ue.whiskyup.utils.JwtManager;
+import pl.kat.ue.whiskyup.utils.manager.JwtManager;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 import java.util.Map;
@@ -25,15 +25,15 @@ public class PaginationCursorMapper {
             return null;
         } try {
             String decoded = jwtManager.parseJwt(paginationCursor);
-            Map<String, String> lastEvaluatedKey = objectMapper.readValue(decoded, new TypeReference<>() {});
-            return deserialize(lastEvaluatedKey);
+            Map<String, String> exclusiveLastKey = objectMapper.readValue(decoded, new TypeReference<>() {});
+            return deserialize(exclusiveLastKey);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private Map<String, AttributeValue> deserialize(Map<String, String> lastEvaluatedKey) {
-        return lastEvaluatedKey.entrySet().stream()
+    private Map<String, AttributeValue> deserialize(Map<String, String> exclusiveLastKey) {
+        return exclusiveLastKey.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey,
                         e -> pojoMapper.deserialize(e.getValue(), AttributeValue.serializableBuilderClass()))
                 );
