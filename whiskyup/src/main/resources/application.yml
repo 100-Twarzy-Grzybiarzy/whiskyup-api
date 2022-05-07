@@ -9,6 +9,9 @@ cloud:
   aws:
     stack:
       auto: false
+    region:
+      auto: false
+      static: eu-central-1
     dynamodb:
       table:
         whiskyup: WhiskyUp
@@ -23,12 +26,6 @@ spring:
       on-profile: test
 cloud:
   aws:
-    region:
-      auto: false
-      static: eu-central-1
-    credentials:
-      access-key: mock
-      secret-key: mock
     sqs:
       enabled: false
 ---
@@ -38,7 +35,4 @@ spring:
       on-profile: local
 cloud:
   aws:
-    region:
-      auto: false
-      static: eu-central-1
     endpoint: http://localstack:4566

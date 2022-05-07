@@ -2,6 +2,7 @@ package pl.kat.ue.whiskyup.repository;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
+import pl.kat.ue.whiskyup.dynamometadata.AttributeValues;
 import pl.kat.ue.whiskyup.model.Brands;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
@@ -24,15 +25,15 @@ public class BrandRepository {
 
     public Brands getBrands() {
         Key getBrandsKey = Key.builder()
-                .partitionValue(Brands.PK)
-                .sortValue(Brands.SK)
+                .partitionValue(AttributeValues.Brand.PARTITION_KEY)
+                .sortValue(AttributeValues.Brand.SORT_KEY)
                 .build();
 
         return Optional.ofNullable(brandTable.getItem(getBrandsKey))
                 .orElseGet(() -> {
                     Brands brands = Brands.builder()
-                            .pk(Brands.PK)
-                            .sk(Brands.SK)
+                            .pk(AttributeValues.Brand.PARTITION_KEY)
+                            .sk(AttributeValues.Brand.SORT_KEY)
                             .build();
                     brandTable.putItem(brands);
                     brands.setValues(new HashSet<>());

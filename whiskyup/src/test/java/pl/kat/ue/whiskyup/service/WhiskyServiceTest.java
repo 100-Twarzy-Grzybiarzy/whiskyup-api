@@ -7,10 +7,10 @@ import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.kat.ue.whiskyup.dto.SearchWhiskiesDto;
 import pl.kat.ue.whiskyup.mapper.PaginationCursorMapper;
-import pl.kat.ue.whiskyup.mapper.WhiskyBaseMapperImpl;
+import pl.kat.ue.whiskyup.mapper.WhiskyMapperImpl;
 import pl.kat.ue.whiskyup.model.FilterTypeDto;
 import pl.kat.ue.whiskyup.model.WhiskiesFindResultDto;
-import pl.kat.ue.whiskyup.model.WhiskyBase;
+import pl.kat.ue.whiskyup.model.Whisky;
 import pl.kat.ue.whiskyup.repository.WhiskyRepository;
 import software.amazon.awssdk.enhanced.dynamodb.model.Page;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
@@ -31,7 +31,7 @@ class WhiskyServiceTest {
     private WhiskyRepository whiskyRepository;
 
     @Spy
-    private WhiskyBaseMapperImpl whiskyBaseMapper;
+    private WhiskyMapperImpl whiskyBaseMapper;
 
     @Mock
     private PaginationCursorMapper paginationCursorMapper;
@@ -151,28 +151,28 @@ class WhiskyServiceTest {
         Assertions.assertEquals(getPageWhereBrandIsAo().items().size(), actual.getResults().size());
     }
 
-    private static Page<WhiskyBase> getPageWhereBrandIsAo() {
-        List<WhiskyBase> whiskies = List.of(
-                WhiskyBase.builder().brand("Ao").addedDate(LocalDate.parse("2022-04-03")).price(200.0).build(),
-                WhiskyBase.builder().brand("Ao").addedDate(LocalDate.parse("2022-05-04")).price(801.0).build(),
-                WhiskyBase.builder().brand("Ao").addedDate(LocalDate.parse("2022-05-01")).price(1430.0).build(),
-                WhiskyBase.builder().brand("Ao").addedDate(LocalDate.parse("2022-05-02")).price(1200.0).build()
+    private static Page<Whisky> getPageWhereBrandIsAo() {
+        List<Whisky> whiskies = List.of(
+                Whisky.builder().brand("Ao").addedDate(LocalDate.parse("2022-04-03")).price(200.0).build(),
+                Whisky.builder().brand("Ao").addedDate(LocalDate.parse("2022-05-04")).price(801.0).build(),
+                Whisky.builder().brand("Ao").addedDate(LocalDate.parse("2022-05-01")).price(1430.0).build(),
+                Whisky.builder().brand("Ao").addedDate(LocalDate.parse("2022-05-02")).price(1200.0).build()
         );
         return Page.create(whiskies);
     }
 
-    private static Page<WhiskyBase> getPageWherePriceIdBetween800And1600() {
-        List<WhiskyBase> whiskies = List.of(
-                WhiskyBase.builder().brand("Ao").price(1430.0).build(),
-                WhiskyBase.builder().brand("Ao").price(1200.0).build(),
-                WhiskyBase.builder().brand("Ao").price(801.0).build(),
-                WhiskyBase.builder().brand("Black Jack").price(899.0).build()
+    private static Page<Whisky> getPageWherePriceIdBetween800And1600() {
+        List<Whisky> whiskies = List.of(
+                Whisky.builder().brand("Ao").price(1430.0).build(),
+                Whisky.builder().brand("Ao").price(1200.0).build(),
+                Whisky.builder().brand("Ao").price(801.0).build(),
+                Whisky.builder().brand("Black Jack").price(899.0).build()
         );
         return Page.create(whiskies);
     }
 
-    private static Page<WhiskyBase> getOnePage() {
-        List<WhiskyBase> whiskies = Stream.generate(() -> WhiskyBase.builder()
+    private static Page<Whisky> getOnePage() {
+        List<Whisky> whiskies = Stream.generate(() -> Whisky.builder()
                         .addedDate(LocalDate.parse("2022-05-02"))
                         .build())
                 .limit(25)
@@ -180,8 +180,8 @@ class WhiskyServiceTest {
         return Page.create(whiskies, null);
     }
 
-    private static Page<WhiskyBase> getFirstPage() {
-        List<WhiskyBase> whiskies = Stream.generate(() -> WhiskyBase.builder()
+    private static Page<Whisky> getFirstPage() {
+        List<Whisky> whiskies = Stream.generate(() -> Whisky.builder()
                         .addedDate(LocalDate.parse("2022-05-02"))
                         .build())
                 .limit(24)
@@ -189,8 +189,8 @@ class WhiskyServiceTest {
         return Page.create(whiskies, null);
     }
 
-    private static Page<WhiskyBase> getSecondPage() {
-        List<WhiskyBase> whiskies = List.of(WhiskyBase.builder().addedDate(LocalDate.parse("2022-05-01")).build());
+    private static Page<Whisky> getSecondPage() {
+        List<Whisky> whiskies = List.of(Whisky.builder().addedDate(LocalDate.parse("2022-05-01")).build());
         return Page.create(whiskies, getExclusiveStartKey());
     }
 

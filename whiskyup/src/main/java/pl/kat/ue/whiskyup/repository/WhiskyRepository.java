@@ -3,9 +3,13 @@ package pl.kat.ue.whiskyup.repository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import pl.kat.ue.whiskyup.dto.SearchWhiskiesDto;
+import pl.kat.ue.whiskyup.dynamometadata.AttributeNames;
+import pl.kat.ue.whiskyup.dynamometadata.AttributeValues;
+import pl.kat.ue.whiskyup.dynamometadata.Expressions;
+import pl.kat.ue.whiskyup.dynamometadata.IndexNames;
 import pl.kat.ue.whiskyup.model.Brands;
 import pl.kat.ue.whiskyup.model.SortTypeDto;
-import pl.kat.ue.whiskyup.model.WhiskyBase;
+import pl.kat.ue.whiskyup.model.Whisky;
 import software.amazon.awssdk.enhanced.dynamodb.*;
 import software.amazon.awssdk.enhanced.dynamodb.model.*;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
@@ -15,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static pl.kat.ue.whiskyup.model.WhiskyBase.*;
 import static pl.kat.ue.whiskyup.service.WhiskyService.PAGE_LIMIT;
 import static software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional.keyEqualTo;
 
@@ -23,11 +26,11 @@ import static software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional.ke
 public class WhiskyRepository {
 
     private final BrandRepository brandRepository;
-    private final DynamoDbTable<WhiskyBase> whiskyTable;
-    private final DynamoDbIndex<WhiskyBase> gsi1Index;
-    private final DynamoDbIndex<WhiskyBase> gsi2Index;
-    private final DynamoDbIndex<WhiskyBase> gsi3Index;
-    private final DynamoDbIndex<WhiskyBase> gsi4Index;
+    private final DynamoDbTable<Whisky> whiskyTable;
+    private final DynamoDbIndex<Whisky> gsi1Index;
+    private final DynamoDbIndex<Whisky> gsi2Index;
+    private final DynamoDbIndex<Whisky> gsi3Index;
+    private final DynamoDbIndex<Whisky> gsi4Index;
     private final DynamoDbEnhancedClient dynamoClient;
 
     public WhiskyRepository(@Value("${cloud.aws.dynamodb.table.whiskyup}") String name,
@@ -35,18 +38,18 @@ public class WhiskyRepository {
                             BrandRepository brandRepository) {
 
         this.dynamoClient = dynamoDbClient;
-        this.whiskyTable = dynamoDbClient.table(name, TableSchema.fromBean(WhiskyBase.class));
+        this.whiskyTable = dynamoDbClient.table(name, TableSchema.fromBean(Whisky.class));
         this.brandRepository = brandRepository;
-        this.gsi1Index = whiskyTable.index("GSI1");
-        this.gsi2Index = whiskyTable.index("GSI2");
-        this.gsi3Index = whiskyTable.index("GSI3");
-        this.gsi4Index = whiskyTable.index("GSI4");
+        this.gsi1Index = whiskyTable.index(IndexNames.GSI_1);
+        this.gsi2Index = whiskyTable.index(IndexNames.GSI_2);
+        this.gsi3Index = whiskyTable.index(IndexNames.GSI_3);
+        this.gsi4Index = whiskyTable.index(IndexNames.GSI_4);
     }
 
-    public void addWhisky(WhiskyBase whiskyBase) {
+    public void addWhisky(Whisky whisky) {
         dynamoClient.transactWriteItems(TransactWriteItemsEnhancedRequest.builder()
-                .addUpdateItem(brandRepository.brandTable, updateBrandsRequest(whiskyBase.getBrand()))
-                .addPutItem(whiskyTable, putWhiskyBaseRequest(whiskyBase))
+                .addUpdateItem(brandRepository.brandTable, updateBrandsRequest(whisky.getBrand()))
+                .addPutItem(whiskyTable, putWhiskyBaseRequest(whisky))
                 .build()
         );
     }
@@ -57,7 +60,7 @@ public class WhiskyRepository {
         return TransactUpdateItemEnhancedRequest.builder(Brands.class)
                 .item(brands)
                 .conditionExpression(Expression.builder()
-                        .expression("attribute_exists(PK)")
+                        .expression(Expressions.ATTRIBUTE_EXISTS)
                         .build())
                 .build();
     }
@@ -69,18 +72,18 @@ public class WhiskyRepository {
         return brand;
     }
 
-    private TransactPutItemEnhancedRequest<WhiskyBase> putWhiskyBaseRequest(WhiskyBase whiskyBase) {
-        return TransactPutItemEnhancedRequest.builder(WhiskyBase.class)
-                .item(whiskyBase)
+    private TransactPutItemEnhancedRequest<Whisky> putWhiskyBaseRequest(Whisky whisky) {
+        return TransactPutItemEnhancedRequest.builder(Whisky.class)
+                .item(whisky)
                 .conditionExpression(Expression.builder()
-                        .expression("attribute_not_exists(PK)")
+                        .expression(Expressions.ATTRIBUTE_NOT_EXISTS)
                         .build())
                 .build();
     }
 
-    public Page<WhiskyBase> getWhiskies(Map<String, AttributeValue> exclusiveStartKey, LocalDate lastSeenDate, int limit) {
+    public Page<Whisky> getWhiskies(Map<String, AttributeValue> exclusiveStartKey, LocalDate lastSeenDate, int limit) {
         QueryConditional queryWhiskies = keyEqualTo(Key.builder()
-                .partitionValue(GSI1_PK_PREFIX + lastSeenDate)
+                .partitionValue(AttributeValues.Whisky.GSI1_PARTITION_KEY + lastSeenDate)
                 .build());
 
         return gsi1Index.query(q -> q.queryConditional(queryWhiskies)
@@ -90,9 +93,9 @@ public class WhiskyRepository {
                 .next();
     }
 
-    public Page<WhiskyBase> getWhiskiesByBrand(SearchWhiskiesDto searchDto, Map<String, AttributeValue> exclusiveStartKey) {
+    public Page<Whisky> getWhiskiesByBrand(SearchWhiskiesDto searchDto, Map<String, AttributeValue> exclusiveStartKey) {
         QueryConditional queryWhiskiesByBrand = keyEqualTo(Key.builder()
-                .partitionValue(GSI3_PK_PREFIX + searchDto.getValue().toLowerCase())
+                .partitionValue(AttributeValues.Whisky.GSI3_PARTITION_KEY + searchDto.getValue().toLowerCase())
                 .build());
 
         return gsi3Index.query(q -> q.queryConditional(queryWhiskiesByBrand)
@@ -114,9 +117,9 @@ public class WhiskyRepository {
         }
     }
 
-    public Page<WhiskyBase> getWhiskiesByPriceRange(SearchWhiskiesDto searchDto, Map<String, AttributeValue> exclusiveStartKey) {
+    public Page<Whisky> getWhiskiesByPriceRange(SearchWhiskiesDto searchDto, Map<String, AttributeValue> exclusiveStartKey) {
         QueryConditional queryWhiskiesByBrand = keyEqualTo(Key.builder()
-                .partitionValue(GSI2_PK_PREFIX + searchDto.getValue().toLowerCase())
+                .partitionValue(AttributeValues.Whisky.GSI2_PARTITION_KEY + searchDto.getValue().toLowerCase())
                 .build());
 
         return gsi2Index.query(q -> q.queryConditional(queryWhiskiesByBrand)
@@ -127,26 +130,26 @@ public class WhiskyRepository {
                 .next();
     }
 
-    public Page<WhiskyBase> getWhiskiesUrls(Map<String, AttributeValue> exclusiveStartKey) {
+    public Page<Whisky> getWhiskiesUrls(Map<String, AttributeValue> exclusiveStartKey) {
         QueryConditional queryWhiskiesByBrand = keyEqualTo(Key.builder()
-                .partitionValue(GSI4_PK_PREFIX)
+                .partitionValue(AttributeValues.Whisky.GSI4_PARTITION_KEY)
                 .build());
 
         return gsi4Index.query(q -> q.queryConditional(queryWhiskiesByBrand)
                         .exclusiveStartKey(exclusiveStartKey)
-                        .attributesToProject("Url"))
+                        .attributesToProject(AttributeNames.Whisky.URL))
                 .iterator()
                 .next();
     }
 
-    public WhiskyBase getWhiskyByUrl(String url) {
+    public Whisky getWhiskyByUrl(String url) {
         QueryConditional queryWhiskyByUrl = keyEqualTo(Key.builder()
-                .partitionValue(GSI4_PK_PREFIX)
-                .sortValue(GSI4_SK_PREFIX + url)
+                .partitionValue(AttributeValues.Whisky.GSI4_PARTITION_KEY)
+                .sortValue(AttributeValues.Whisky.GSI4_SORT_KEY + url)
                 .build());
 
-        List<WhiskyBase> whisky = gsi4Index.query(q -> q.queryConditional(queryWhiskyByUrl)
-                        .attributesToProject("Id"))
+        List<Whisky> whisky = gsi4Index.query(q -> q.queryConditional(queryWhiskyByUrl)
+                        .attributesToProject(AttributeNames.Whisky.ID))
                 .iterator()
                 .next()
                 .items();
@@ -159,8 +162,8 @@ public class WhiskyRepository {
                 .map(whiskyToDelete -> {
                     String id = whiskyToDelete.getId();
                     Key key = Key.builder()
-                            .partitionValue(PK_PREFIX + id)
-                            .sortValue(SK_PREFIX + id)
+                            .partitionValue(AttributeValues.Whisky.PARTITION_KEY + id)
+                            .sortValue(AttributeValues.Whisky.SORT_KEY + id)
                             .build();
                     whiskyTable.deleteItem(key);
                     return true;

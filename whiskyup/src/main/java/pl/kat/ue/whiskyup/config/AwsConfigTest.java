@@ -1,6 +1,5 @@
 package pl.kat.ue.whiskyup.config;
 
-
 import com.amazonaws.services.sqs.AmazonSQSAsync;
 import com.amazonaws.services.sqs.AmazonSQSAsyncClientBuilder;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,5 +29,4 @@ public class AwsConfigTest {
                 .withRegion(AWS_REGION)
                 .build();
     }
-
 }

@@ -115,7 +115,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserWhiskiesFindResult'
+                $ref: '#/components/schemas/WhiskiesFindResult'
   /user/{id}/whisky:
     post:
       summary: Add user whisky
@@ -130,14 +130,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserWhisky'
+              $ref: '#/components/schemas/Whisky'
       responses:
         '200':
           description: ''
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserWhisky'
+                $ref: '#/components/schemas/Whisky'
 components:
   schemas:
     WhiskiesFindResult:
@@ -149,15 +149,6 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Whisky"
-    UserWhiskiesFindResult:
-      type: object
-      properties:
-        pageCursor:
-          type: string
-        results:
-          type: array
-          items:
-            $ref: "#/components/schemas/UserWhisky"
     UrlsFindResult:
       type: object
       properties:
@@ -213,48 +204,6 @@ components:
         amountOfRatings:
           type: integer
           format: int32
-        price:
-          type: number
-          format: double
-        tags:
-          type: array
-          items:
-            type: string
-    UserWhisky:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        category:
-          type: string
-        distillery:
-          type: string
-        bottler:
-          type: string
-        bottlingSeries:
-          type: string
-        bottled:
-          type: string
-        vintage:
-          type: integer
-          format: int32
-        stagedAge:
-          type: integer
-          format: int32
-        strength:
-          type: number
-          format: double
-        size:
-          type: integer
-          format: int32
-        rating:
-          type: number
-          format: double
-        userRating:
-          type: number
-          format: double
         price:
           type: number
           format: double

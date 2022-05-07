@@ -6,19 +6,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
-import pl.kat.ue.whiskyup.mapper.WhiskyBaseMapper;
+import pl.kat.ue.whiskyup.mapper.WhiskyMapper;
 import pl.kat.ue.whiskyup.model.ActionType;
-import pl.kat.ue.whiskyup.model.WhiskyBase;
+import pl.kat.ue.whiskyup.model.Whisky;
 import pl.kat.ue.whiskyup.model.WhiskyDto;
 import pl.kat.ue.whiskyup.service.WhiskyService;
-
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class WhiskySqsListener {
+public class WhiskyQueueListener {
 
-    private final WhiskyBaseMapper whiskyBaseMapper;
+    private final WhiskyMapper whiskyMapper;
     private final WhiskyService whiskyService;
 
     @SqsListener("${cloud.aws.sqs.queue.whisky}")
@@ -28,9 +27,9 @@ public class WhiskySqsListener {
         ActionType actionType = ActionType.valueOfLabel(actionTypeDto);
 
         if (ActionType.CREATE.equals(actionType)) {
-            WhiskyBase whiskyBase = whiskyBaseMapper.mapDtoToModel(whiskyDto);
-            whiskyService.addWhisky(whiskyBase);
-            log.info("New whisky '{}'", whiskyBase.getUrl());
+            Whisky whisky = whiskyMapper.mapDtoToModel(whiskyDto);
+            whiskyService.addWhisky(whisky);
+            log.info("New whisky '{}'", whisky.getUrl());
 
         } else if (ActionType.DELETE.equals(actionType)) {
             String url = whiskyDto.getUrl();
