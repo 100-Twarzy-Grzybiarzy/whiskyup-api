@@ -15,8 +15,6 @@ import java.util.Optional;
 @Mapper(componentModel = "spring")
 public interface WhiskyMapper {
 
-    DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yy");
-
     @Mapping(target = "pk", source = "id", qualifiedByName = "mapPk")
     @Mapping(target = "sk", source = "id", qualifiedByName = "mapSk")
     @Mapping(target = "gsi1pk", source = "addedDate", qualifiedByName = "mapGsi1Pk")
@@ -33,9 +31,8 @@ public interface WhiskyMapper {
 
     @BeforeMapping
     default void generateIdFromAddedDate(WhiskyDto whiskyDto, @MappingTarget Whisky.WhiskyBuilder target) {
-        LocalDate addedDate = LocalDate.parse(whiskyDto.getAddedDate(), DATE_FORMAT);
+        LocalDate addedDate = LocalDate.parse(whiskyDto.getAddedDate());
         whiskyDto.setId(KsuidManager.newKsuid(addedDate));
-        whiskyDto.setAddedDate(addedDate.toString());
     }
 
     @Named("mapPk")
