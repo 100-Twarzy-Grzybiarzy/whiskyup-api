@@ -29,6 +29,7 @@ public class WhiskyService {
     public static final LocalDate OLDEST_SAVED_DATE = LocalDate.parse("2013-07-27");
     public static final Integer PAGE_LIMIT = 25;
     public static final Integer EMPTY_DAYS_LIMIT = 12 * 30;
+    public static Integer APPROXIMATE_TOTAL_PAST_WHISKY_NUMBER = 50 * 434 - 1;
 
     public WhiskiesFindResultDto getWhiskies(SearchWhiskiesDto searchDto) {
         Map<String, AttributeValue> exclusiveStartKey = paginationCursorMapper.mapFromCursor(searchDto.getPageCursor());
@@ -114,7 +115,17 @@ public class WhiskyService {
     }
 
     public void addWhisky(Whisky whisky) {
+        fixAddedDay(whisky);
         whiskyRepository.addWhisky(whisky);
+        APPROXIMATE_TOTAL_PAST_WHISKY_NUMBER--;
+    }
+
+    public static void fixAddedDay(Whisky whisky) {
+        if (APPROXIMATE_TOTAL_PAST_WHISKY_NUMBER > 0) {
+            int daysBack = APPROXIMATE_TOTAL_PAST_WHISKY_NUMBER / 100;
+            LocalDate addedDate = whisky.getAddedDate().minusDays(daysBack);
+            whisky.setAddedDate(addedDate);
+        }
     }
 
     public UrlsFindResultDto getWhiskiesUrls(String pageCursor) {

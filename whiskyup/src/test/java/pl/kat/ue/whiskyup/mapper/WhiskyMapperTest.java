@@ -36,7 +36,7 @@ class WhiskyMapperTest {
         WhiskyDto whiskyDto = new WhiskyDto()
                 .brand("Aberlour")
                 .price(120.20)
-                .addedDate("30.04.22")
+                .addedDate("2022-04-30")
                 .url("whiskybase.com/market/whisky/220455");
 
         //when
