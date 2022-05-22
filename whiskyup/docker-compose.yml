@@ -2,12 +2,35 @@ version: '3.7'
 services:
   backend:
     container_name: backend
-    build:
-      context: .
+    image: whiskyup/backend
     ports:
       - '8080:8080'
     environment:
       - SPRING_PROFILES_ACTIVE=local
+  crawler:
+    container_name: crawler
+    image: whiskyup/crawler
+    depends_on:
+      - backend
+    environment:
+      - RUN_PROFILE=local
+      - ENDPOINT_URL=http://localstack:4566
+      - KNOWN_WHISKIES_URL=http://backend:8080/urls
+      - MAX_NUMBER_OF_PAGES_TO_CRAWL_OVER=1000
+      - URLS_TO_BE_SCRAPPED_QUEUE=http://localstack:4566/000000000000/new-url
+      - URLS_TO_BE_DELETED_QUEUE=http://localstack:4566/000000000000/whisky
+  scraper:
+    container_name: scraper
+    image: whiskyup/scraper
+    environment:
+      - RUN_PROFILE=local
+      - ENDPOINT_URL=http://localstack:4566
+      - URLS_TO_BE_SCRAPPED_QUEUE=http://localstack:4566/000000000000/new-url
+      - WHISKIES_TO_BE_ADDED_QUEUE=http://localstack:4566/000000000000/whisky
+      - AWS_ACCOUNT_ID=000000000000
+      - AWS_REGION=eu-central-1
+      - AWS_ACCESS_KEY_ID=mock
+      - AWS_SECRET_ACCESS_KEY=mock
   localstack:
     container_name: localstack
     image: localstack/localstack
@@ -19,6 +42,5 @@ services:
       - EDGE_PORT=4566
       - DOCKER_HOST=unix:///var/run/docker.sock
       - HOSTNAME_EXTERNAL=localstack
-      - LAMBDA_DOCKER_NETWORK=application
     volumes:
       - '${TMPDIR:-/tmp/localstack}:/tmp/localstack'
