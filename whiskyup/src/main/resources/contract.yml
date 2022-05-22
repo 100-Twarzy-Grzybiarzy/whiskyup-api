@@ -186,7 +186,7 @@ components:
         vintage:
           type: integer
           format: int32
-        stagedAge:
+        statedAge:
           type: integer
           format: int32
         strength:
@@ -195,6 +195,8 @@ components:
         size:
           type: integer
           format: int32
+        sizeUnit:
+          type: string
         rating:
           type: number
           format: double
@@ -207,6 +209,8 @@ components:
         price:
           type: number
           format: double
+        currency:
+          type: string
         tags:
           type: array
           items:

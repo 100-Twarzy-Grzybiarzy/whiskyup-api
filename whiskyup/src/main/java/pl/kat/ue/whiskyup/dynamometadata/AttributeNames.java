@@ -45,13 +45,15 @@ public class AttributeNames {
         public final static String BOTTLED = "Bottled";
         public final static String BRAND = "Brand";
         public final static String VINTAGE = "Vintage";
-        public final static String STAGED_AGE = "StagedAge";
+        public final static String STATED_AGE = "StatedAge";
         public final static String STRENGTH = "Strength";
         public final static String SIZE = "Size";
+        public final static String SIZE_UNIT = "SizeUnit";
         public final static String RATING = "Rating";
         public final static String USER_RATING = "UserRating";
         public final static String AMOUNT_OF_RATINGS = "AmountOfRatings";
         public final static String PRICE = "Price";
+        public final static String CURRENCY = "Currency";
         public final static String TAGS = "Tags";
     }
 
