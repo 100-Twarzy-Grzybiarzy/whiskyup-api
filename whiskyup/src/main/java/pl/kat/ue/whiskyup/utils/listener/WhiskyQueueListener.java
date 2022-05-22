@@ -24,6 +24,7 @@ public class WhiskyQueueListener {
     public void onSqsMessage(@Header("ActionType") String actionTypeDto,
                              @Payload WhiskyDto whiskyDto) {
 
+        log.info(actionTypeDto);
         ActionType actionType = ActionType.valueOfLabel(actionTypeDto);
 
         if (ActionType.CREATE.equals(actionType)) {

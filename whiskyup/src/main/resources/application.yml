@@ -2,6 +2,8 @@ server:
   port: 80
 spring:
   application.name: whiskyup
+init:
+  mode: ${INIT_MODE:false}
 jwt:
   secret:
     key: ${JWT_SECRET_KEY:mockSecretJwtKeyUsedWithHs512MustHaveSizeEqualOrGraterThan512BitsmockSecretJwtKeyUsedWithHs512MustHaveSizeEqualOrGraterThan512Bits}

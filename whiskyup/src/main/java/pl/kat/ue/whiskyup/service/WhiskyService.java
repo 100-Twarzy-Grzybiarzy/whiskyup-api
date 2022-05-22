@@ -1,6 +1,8 @@
 package pl.kat.ue.whiskyup.service;
 
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import pl.kat.ue.whiskyup.dto.SearchWhiskiesDto;
 import pl.kat.ue.whiskyup.dynamometadata.AttributeNames;
@@ -20,17 +22,26 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
+@NoArgsConstructor
 public class WhiskyService {
 
-    private final WhiskyRepository whiskyRepository;
-    private final WhiskyMapper whiskyMapper;
-    private final PaginationCursorMapper paginationCursorMapper;
+    private WhiskyRepository whiskyRepository;
+    private WhiskyMapper whiskyMapper;
+    private PaginationCursorMapper paginationCursorMapper;
 
     public static final LocalDate OLDEST_SAVED_DATE = LocalDate.parse("2013-07-27");
     public static final Integer PAGE_LIMIT = 25;
     public static final Integer EMPTY_DAYS_LIMIT = 12 * 30;
     public static Integer APPROXIMATE_TOTAL_PAST_WHISKY_NUMBER = 50 * 434 - 1;
+    public boolean INIT_MODE;
+
+    public WhiskyService(WhiskyRepository whiskyRepository, WhiskyMapper whiskyMapper,
+                         PaginationCursorMapper paginationCursorMapper, @Value("${init.mode}") boolean initMode) {
+        this.whiskyRepository = whiskyRepository;
+        this.whiskyMapper = whiskyMapper;
+        this.paginationCursorMapper = paginationCursorMapper;
+        this.INIT_MODE = initMode;
+    }
 
     public WhiskiesFindResultDto getWhiskies(SearchWhiskiesDto searchDto) {
         Map<String, AttributeValue> exclusiveStartKey = paginationCursorMapper.mapFromCursor(searchDto.getPageCursor());
@@ -121,8 +132,8 @@ public class WhiskyService {
         APPROXIMATE_TOTAL_PAST_WHISKY_NUMBER--;
     }
 
-    public static void fixAddedDay(Whisky whisky) {
-        if (APPROXIMATE_TOTAL_PAST_WHISKY_NUMBER > 0) {
+    public void fixAddedDay(Whisky whisky) {
+        if (APPROXIMATE_TOTAL_PAST_WHISKY_NUMBER > 0 && INIT_MODE) {
             int daysBack = APPROXIMATE_TOTAL_PAST_WHISKY_NUMBER / 100;
             LocalDate addedDate = whisky.getAddedDate().minusDays(daysBack);
             whisky.setAddedDate(addedDate);
