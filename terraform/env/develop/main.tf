@@ -31,7 +31,7 @@ module "main" {
   prefix = "whiskyup_develop"
 
   aws_region     = var.aws_region
-  aws_account_id = 123456789000
+  aws_account_id = 237673088863
   is_develop     = true
 
   tags = {

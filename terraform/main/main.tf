@@ -4,6 +4,27 @@ module "iam" {
   tags   = var.tags
 }
 
+module "ecs_task" {
+  source   = "../modules/aws_ecs_task"
+  role_arn = module.iam.ecs_task_role_arn
+  prefix = var.prefix
+
+  containers = [
+    {
+      name  = "backend",
+      image = "${local.image_common_uri}/whiskyup/backend"
+    }, {
+      name  = "crawler",
+      image = "${local.image_common_uri}/whiskyup/crawler"
+    }, {
+      name  = "scraper",
+      image = "${local.image_common_uri}/whiskyup/scraper"
+    }
+  ]
+
+  tags = var.tags
+}
+
 module "whiskyup_table" {
   source = "../modules/dynamodb_table"
 
@@ -47,25 +68,25 @@ module "whiskyup_table" {
 
   global_secondary_indexes = [
     {
-      name = "GSI1",
-      partition_key = "GSI1PK",
-      sort_key = "GSI1SK",
+      name            = "GSI1",
+      partition_key   = "GSI1PK",
+      sort_key        = "GSI1SK",
       projection_type = "ALL"
     }, {
-      name = "GSI2",
-      partition_key = "GSI2PK",
-      sort_key = "GSI2SK",
+      name            = "GSI2",
+      partition_key   = "GSI2PK",
+      sort_key        = "GSI2SK",
       projection_type = "ALL"
     }, {
-      name = "GSI3",
-      partition_key = "GSI3PK",
-      sort_key = "GSI3SK",
+      name            = "GSI3",
+      partition_key   = "GSI3PK",
+      sort_key        = "GSI3SK",
       projection_type = "ALL"
     }, {
-      name = "GSI4",
-      partition_key = "GSI4PK",
-      sort_key = "GSI4SK",
-      projection_type = "INCLUDE",
+      name               = "GSI4",
+      partition_key      = "GSI4PK",
+      sort_key           = "GSI4SK",
+      projection_type    = "INCLUDE",
       non_key_attributes = ["Url", "Id"]
     }
   ]
