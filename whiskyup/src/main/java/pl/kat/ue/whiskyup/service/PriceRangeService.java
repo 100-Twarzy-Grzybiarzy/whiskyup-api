@@ -2,10 +2,7 @@ package pl.kat.ue.whiskyup.service;
 
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NavigableMap;
-import java.util.TreeMap;
+import java.util.*;
 
 @Service
 public class PriceRangeService {
@@ -43,7 +40,9 @@ public class PriceRangeService {
     }
 
     public static String getPriceRange(Double price) {
-        return priceRanges.lowerEntry(price).getValue();
+        return Optional.ofNullable(price)
+                .map(p -> priceRanges.lowerEntry(p).getValue())
+                .orElse(null);
     }
 
     public List<String> getPriceRanges() {

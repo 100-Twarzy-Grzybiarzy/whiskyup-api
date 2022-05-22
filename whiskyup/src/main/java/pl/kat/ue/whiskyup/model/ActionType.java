@@ -1,7 +1,7 @@
 package pl.kat.ue.whiskyup.model;
 
 import java.util.Arrays;
-import java.util.Optional;
+import java.util.Objects;
 
 public enum ActionType {
 
@@ -15,12 +15,12 @@ public enum ActionType {
     }
 
     public static ActionType valueOfLabel(String label) {
-        return Optional.ofNullable(label)
-                .map(l -> Arrays.stream(values())
-                        .filter(type -> type.label.equals(l.toLowerCase()))
-                        .findFirst()
-                        .orElseGet(null)
-                )
+        if (Objects.isNull(label)) {
+            return null;
+        }
+        return Arrays.stream(values())
+                .filter(actionType -> actionType.label.equals(label.toLowerCase()))
+                .findFirst()
                 .orElse(null);
     }
 }
