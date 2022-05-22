@@ -8,7 +8,6 @@ import pl.kat.ue.whiskyup.service.PriceRangeService;
 import pl.kat.ue.whiskyup.utils.manager.KsuidManager;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -31,7 +30,10 @@ public interface WhiskyMapper {
 
     @BeforeMapping
     default void generateIdFromAddedDate(WhiskyDto whiskyDto, @MappingTarget Whisky.WhiskyBuilder target) {
-        LocalDate addedDate = LocalDate.parse(whiskyDto.getAddedDate());
+        LocalDate addedDate = Optional.ofNullable(whiskyDto.getAddedDate())
+                .map(LocalDate::parse)
+                .orElse(LocalDate.now());
+        whiskyDto.setAddedDate(addedDate.toString());
         whiskyDto.setId(KsuidManager.newKsuid(addedDate));
     }
 
@@ -57,18 +59,23 @@ public interface WhiskyMapper {
 
     @Named("mapGsi2Pk")
     default String mapGsi2Pk(Double price) {
-        return AttributeValues.Whisky.GSI2_PARTITION_KEY + PriceRangeService.getPriceRange(price);
+        return Optional.ofNullable(PriceRangeService.getPriceRange(price))
+                .map(priceRange -> AttributeValues.Whisky.GSI2_PARTITION_KEY + priceRange)
+                .orElse(null);
     }
 
     @Named("mapGsi2Sk")
     default String mapGsi2Sk(WhiskyDto whiskyDto) {
-        return String.format(Locale.ENGLISH, AttributeValues.Whisky.GSI2_SORT_KEY, whiskyDto.getPrice())
-                + whiskyDto.getId();
+        return Optional.ofNullable(whiskyDto.getPrice())
+                .map(price -> String.format(Locale.ENGLISH, AttributeValues.Whisky.GSI2_SORT_KEY, price) + whiskyDto.getId())
+                .orElse(null);
     }
 
     @Named("mapGsi3Pk")
     default String mapGsi3Pk(String brand) {
-        return AttributeValues.Whisky.GSI3_PARTITION_KEY + Optional.ofNullable(brand).orElse("").toLowerCase();
+        return Optional.ofNullable(brand)
+                .map(b -> AttributeValues.Whisky.GSI3_PARTITION_KEY + b.toLowerCase())
+                .orElse(null);
     }
 
     @Named("mapGsi3Sk")

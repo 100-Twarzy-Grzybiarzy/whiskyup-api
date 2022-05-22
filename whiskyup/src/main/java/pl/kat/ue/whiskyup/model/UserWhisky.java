@@ -49,14 +49,17 @@ public class UserWhisky {
     @Getter(onMethod = @__({@DynamoDbAttribute(AttributeNames.Whisky.VINTAGE)}))
     private Integer vintage;
 
-    @Getter(onMethod = @__({@DynamoDbAttribute(AttributeNames.Whisky.STAGED_AGE)}))
-    private Integer stagedAge;
+    @Getter(onMethod = @__({@DynamoDbAttribute(AttributeNames.Whisky.STATED_AGE)}))
+    private Integer statedAge;
 
     @Getter(onMethod = @__({@DynamoDbAttribute(AttributeNames.Whisky.STRENGTH)}))
     private Double strength;
 
     @Getter(onMethod = @__({@DynamoDbAttribute(AttributeNames.Whisky.SIZE)}))
     private Integer size;
+
+    @Getter(onMethod = @__({@DynamoDbAttribute(AttributeNames.Whisky.SIZE_UNIT)}))
+    private String sizeUnit;
 
     @Getter(onMethod = @__({@DynamoDbAttribute(AttributeNames.Whisky.RATING)}))
     private Double rating;
@@ -66,6 +69,9 @@ public class UserWhisky {
 
     @Getter(onMethod = @__({@DynamoDbAttribute(AttributeNames.Whisky.PRICE)}))
     private Double price;
+
+    @Getter(onMethod = @__({@DynamoDbAttribute(AttributeNames.Whisky.CURRENCY)}))
+    private String currency;
 
     @Getter(onMethod = @__({@DynamoDbAttribute(AttributeNames.Whisky.TAGS)}))
     private Set<String> tags;
