@@ -137,7 +137,8 @@ public class WhiskyRepository {
 
         return gsi4Index.query(q -> q.queryConditional(queryWhiskiesByBrand)
                         .exclusiveStartKey(exclusiveStartKey)
-                        .attributesToProject(AttributeNames.Whisky.URL))
+                        .attributesToProject(AttributeNames.Whisky.URL)
+                        .scanIndexForward(false))
                 .iterator()
                 .next();
     }

@@ -2,9 +2,9 @@ version: '3.7'
 services:
   backend:
     container_name: backend
-    image: whiskyup/backend
+    image: whiskyup/backend:new
     ports:
-      - '8080:8080'
+      - '8080:80'
     environment:
       - SPRING_PROFILES_ACTIVE=local
   crawler:
@@ -15,7 +15,7 @@ services:
     environment:
       - RUN_PROFILE=local
       - ENDPOINT_URL=http://localstack:4566
-      - KNOWN_WHISKIES_URL=http://backend:8080/urls
+      - KNOWN_WHISKIES_URL=http://backend:80/urls
       - MAX_NUMBER_OF_PAGES_TO_CRAWL_OVER=1000
       - URLS_TO_BE_SCRAPPED_QUEUE=http://localstack:4566/000000000000/new-url
       - URLS_TO_BE_DELETED_QUEUE=http://localstack:4566/000000000000/whisky

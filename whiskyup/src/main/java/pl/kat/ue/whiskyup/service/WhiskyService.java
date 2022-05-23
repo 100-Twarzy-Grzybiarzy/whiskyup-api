@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.kat.ue.whiskyup.dto.SearchWhiskiesDto;
 import pl.kat.ue.whiskyup.dynamometadata.AttributeNames;
+import pl.kat.ue.whiskyup.dynamometadata.AttributeValues;
 import pl.kat.ue.whiskyup.mapper.PaginationCursorMapper;
 import pl.kat.ue.whiskyup.mapper.WhiskyMapper;
 import pl.kat.ue.whiskyup.model.*;
@@ -99,7 +100,7 @@ public class WhiskyService {
     private static LocalDate extractLastSeenDate(Map<String, AttributeValue> exclusiveStartKey) {
         String lastSeenDate = Optional.ofNullable(exclusiveStartKey)
                 .map(map -> map.get(AttributeNames.GSI1_PARTITION_KEY).s()
-                        .replace(AttributeNames.GSI1_PARTITION_KEY, ""))
+                        .replace(AttributeValues.Whisky.GSI1_PARTITION_KEY, ""))
                 .orElseGet(() -> LocalDate.now().toString());
 
         return LocalDate.parse(lastSeenDate);
