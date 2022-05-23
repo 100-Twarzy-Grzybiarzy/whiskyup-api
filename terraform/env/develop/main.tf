@@ -28,7 +28,7 @@ provider "aws" {
 module "main" {
   source = "../../main"
 
-  prefix = "whiskyup_develop"
+  prefix = "whiskyup-develop"
 
   aws_region     = var.aws_region
   aws_account_id = 237673088863

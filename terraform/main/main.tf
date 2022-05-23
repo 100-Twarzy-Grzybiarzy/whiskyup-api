@@ -5,20 +5,53 @@ module "iam" {
 }
 
 module "ecs_task" {
-  source   = "../modules/aws_ecs_task"
-  role_arn = module.iam.ecs_task_role_arn
-  prefix = var.prefix
+  source = "../modules/aws_ecs_task"
+
+  count      = var.is_local ? 0 : 1
+  role_arn   = module.iam.ecs_task_role_arn
+  prefix     = var.prefix
+  aws_region = var.aws_region
 
   containers = [
     {
-      name  = "backend",
-      image = "${local.image_common_uri}/whiskyup/backend"
+      name        = "backend",
+      image       = "${local.image_common_uri}/whiskyup/backend:latest"
+      environment = [
+        {
+          name  = "INIT_MODE"
+          value = "true"
+        }
+      ]
     }, {
-      name  = "crawler",
-      image = "${local.image_common_uri}/whiskyup/crawler"
+      name        = "crawler",
+      image       = "${local.image_common_uri}/whiskyup/crawler:latest"
+      environment = [
+        {
+          name  = "KNOWN_WHISKIES_URL"
+          value = "http://localhost:8080/urls"
+        }, {
+          name  = "MAX_NUMBER_OF_PAGES_TO_CRAWL_OVER"
+          value = "1000"
+        }, {
+          name  = "URLS_TO_BE_SCRAPPED_QUEUE"
+          value = module.new_url_queue.url
+        }, {
+          name  = "URLS_TO_BE_DELETED_QUEUE"
+          value = module.whisky_queue.url
+        }
+      ]
     }, {
-      name  = "scraper",
-      image = "${local.image_common_uri}/whiskyup/scraper"
+      name        = "scraper",
+      image       = "${local.image_common_uri}/whiskyup/scraper:latest"
+      environment = [
+        {
+          name  = "URLS_TO_BE_SCRAPPED_QUEUE"
+          value = module.new_url_queue.url
+        }, {
+          name  = "WHISKIES_TO_BE_ADDED_QUEUE"
+          value = module.whisky_queue.url
+        }
+      ]
     }
   ]
 

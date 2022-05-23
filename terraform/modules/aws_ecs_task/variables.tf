@@ -1,3 +1,8 @@
+variable "aws_region" {
+  type    = string
+  default = "eu-central-1"
+}
+
 variable "prefix" {
   type = string
 }
@@ -10,6 +15,10 @@ variable "containers" {
   type = list(object({
     name = string
     image = string
+    environment = list(object({
+      name = string
+      value = string
+    }))
   }))
 }
 
