@@ -22,26 +22,20 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@NoArgsConstructor
+@RequiredArgsConstructor
 public class WhiskyService {
 
-    private WhiskyRepository whiskyRepository;
-    private WhiskyMapper whiskyMapper;
-    private PaginationCursorMapper paginationCursorMapper;
+    private final WhiskyRepository whiskyRepository;
+    private final WhiskyMapper whiskyMapper;
+    private final PaginationCursorMapper paginationCursorMapper;
 
+    @Value("#{new Boolean('${init.mode}')}")
+    public Boolean INIT_MODE;
     public static final LocalDate OLDEST_SAVED_DATE = LocalDate.parse("2013-07-27");
     public static final Integer PAGE_LIMIT = 25;
     public static final Integer EMPTY_DAYS_LIMIT = 12 * 30;
     public static Integer APPROXIMATE_TOTAL_PAST_WHISKY_NUMBER = 50 * 434 - 1;
-    public boolean INIT_MODE;
 
-    public WhiskyService(WhiskyRepository whiskyRepository, WhiskyMapper whiskyMapper,
-                         PaginationCursorMapper paginationCursorMapper, @Value("${init.mode}") boolean initMode) {
-        this.whiskyRepository = whiskyRepository;
-        this.whiskyMapper = whiskyMapper;
-        this.paginationCursorMapper = paginationCursorMapper;
-        this.INIT_MODE = initMode;
-    }
 
     public WhiskiesFindResultDto getWhiskies(SearchWhiskiesDto searchDto) {
         Map<String, AttributeValue> exclusiveStartKey = paginationCursorMapper.mapFromCursor(searchDto.getPageCursor());
