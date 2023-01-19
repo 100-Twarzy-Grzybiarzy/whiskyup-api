@@ -13,12 +13,14 @@ services:
     depends_on:
       - backend
     environment:
+      - INIT_MODE=true
       - RUN_PROFILE=local
       - ENDPOINT_URL=http://localstack:4566
       - KNOWN_WHISKIES_URL=http://backend:8080/urls
       - MAX_NUMBER_OF_PAGES_TO_CRAWL_OVER=1000
       - URLS_TO_BE_SCRAPPED_QUEUE=http://localstack:4566/000000000000/new-url
       - URLS_TO_BE_DELETED_QUEUE=http://localstack:4566/000000000000/whisky
+      - BACKEND_HEALTHCHECK_URL=http://backend:8080/actuator
   scraper:
     container_name: scraper
     image: whiskyup/scraper
@@ -31,6 +33,7 @@ services:
       - AWS_REGION=eu-central-1
       - AWS_ACCESS_KEY_ID=mock
       - AWS_SECRET_ACCESS_KEY=mock
+      - BACKEND_HEALTHCHECK_URL=http://backend:8080/actuator
   localstack:
     container_name: localstack
     image: localstack/localstack

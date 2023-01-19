@@ -24,6 +24,12 @@ resource "aws_iam_policy" "iam_policy" {
       ],
       "Resource": "arn:aws:dynamodb:*:*:*",
       "Effect": "Allow"
+    },{
+      "Action": [
+        "ecr:*"
+      ],
+      "Resource": "arn:aws:ecr:*:*:*",
+      "Effect": "Allow"
     }
   ]
 }
