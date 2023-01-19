@@ -3,24 +3,24 @@ package pl.kat.ue.whiskyup.mapper;
 import org.mapstruct.*;
 import pl.kat.ue.whiskyup.dynamometadata.AttributeValues;
 import pl.kat.ue.whiskyup.model.UserWhisky;
-import pl.kat.ue.whiskyup.model.WhiskyDto;
+import pl.kat.ue.whiskyup.model.UserWhiskyDto;
 import pl.kat.ue.whiskyup.utils.manager.KsuidManager;
 
 @Mapper(componentModel = "spring")
 public interface UserWhiskyMapper {
 
     @Mapping(target = "userId", source = "userId")
-    @Mapping(target = "whiskyId", source = "whiskyDto.id")
+    @Mapping(target = "whiskyId", source = "userWhiskyDto.id")
     @Mapping(target = "pk", source = "userId", qualifiedByName = "mapPk")
-    @Mapping(target = "sk", source = "whiskyDto.id", qualifiedByName = "mapSk")
-    UserWhisky mapDtoToModel(String userId, WhiskyDto whiskyDto);
+    @Mapping(target = "sk", source = "userWhiskyDto.id", qualifiedByName = "mapSk")
+    UserWhisky mapDtoToModel(String userId, UserWhiskyDto userWhiskyDto);
 
     @Mapping(target = "id", source = "whiskyId")
-    WhiskyDto mapModelToDto(UserWhisky userWhisky);
+    UserWhiskyDto mapModelToDto(UserWhisky userWhisky);
 
     @BeforeMapping
-    default void generateWhiskyId(WhiskyDto whiskyDto, @MappingTarget UserWhisky.UserWhiskyBuilder target) {
-        whiskyDto.setId(KsuidManager.newKsuid());
+    default void generateWhiskyId(UserWhiskyDto userWhiskyDto, @MappingTarget UserWhisky.UserWhiskyBuilder target) {
+        userWhiskyDto.setId(KsuidManager.newKsuid());
     }
 
     @Named("mapPk")

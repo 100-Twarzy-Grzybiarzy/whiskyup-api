@@ -6,6 +6,7 @@ import org.mapstruct.factory.Mappers;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import pl.kat.ue.whiskyup.model.UserWhisky;
+import pl.kat.ue.whiskyup.model.UserWhiskyDto;
 import pl.kat.ue.whiskyup.model.WhiskyDto;
 import pl.kat.ue.whiskyup.utils.manager.KsuidManager;
 
@@ -17,12 +18,12 @@ class UserWhiskyMapperTest {
     void shouldMapFromDtoToNewModel() {
         //given
         UserWhisky userWhisky;
-        WhiskyDto whiskyDto = new WhiskyDto();
+        UserWhiskyDto userWhiskyDto = new UserWhiskyDto();
 
         //when
         try (MockedStatic<KsuidManager> mockedKsuid = Mockito.mockStatic(KsuidManager.class)) {
             mockedKsuid.when(KsuidManager::newKsuid).thenReturn("1HCpXwx2EK9oYluWbacgeCnFcLf");
-            userWhisky = userWhiskyMapper.mapDtoToModel("abc123def", whiskyDto);
+            userWhisky = userWhiskyMapper.mapDtoToModel("abc123def", userWhiskyDto);
         }
 
         //then
@@ -38,9 +39,9 @@ class UserWhiskyMapperTest {
         userWhisky.setWhiskyId("qwerty123");
 
         //when
-        WhiskyDto whiskyDto = userWhiskyMapper.mapModelToDto(userWhisky);
+        UserWhiskyDto userWhiskyDto = userWhiskyMapper.mapModelToDto(userWhisky);
 
         //then
-        Assertions.assertEquals("qwerty123", whiskyDto.getId());
+        Assertions.assertEquals("qwerty123", userWhiskyDto.getId());
     }
 }

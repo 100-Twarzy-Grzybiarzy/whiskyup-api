@@ -35,7 +35,7 @@ paths:
                   type: string
   /price-ranges:
     get:
-      summary: Get price ranges
+      summary: Get price rangesg
       operationId: getPriceRanges
       responses:
         '200':
@@ -115,7 +115,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/WhiskiesFindResult'
+                $ref: '#/components/schemas/UserWhiskiesFindResult'
   /user/{id}/whisky:
     post:
       summary: Add user whisky
@@ -130,14 +130,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Whisky'
+              $ref: '#/components/schemas/UserWhisky'
       responses:
         '200':
           description: ''
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Whisky'
+                $ref: '#/components/schemas/UserWhisky'
 components:
   schemas:
     WhiskiesFindResult:
@@ -149,6 +149,15 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Whisky"
+    UserWhiskiesFindResult:
+      type: object
+      properties:
+        pageCursor:
+          type: string
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserWhisky"
     UrlsFindResult:
       type: object
       properties:
@@ -226,6 +235,49 @@ components:
           type: string
         distillery:
           type: string
+    UserWhisky:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        thumbnailUrl:
+          type: string
+        category:
+          type: string
+        bottler:
+          type: string
+        bottlingSeries:
+          type: string
+        bottled:
+          type: string
+        vintage:
+          type: integer
+          format: int32
+        statedAge:
+          type: integer
+          format: int32
+        strength:
+          type: number
+          format: double
+        size:
+          type: integer
+          format: int32
+        sizeUnit:
+          type: string
+        rating:
+          type: number
+          format: double
+        price:
+          type: number
+          format: double
+        currency:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
     FilterType:
       type: string
       enum:

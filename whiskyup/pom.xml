@@ -85,6 +85,11 @@
             <version>${org.openapitools.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>1.6.4</version>
+        </dependency>
+        <dependency>
             <groupId>io.swagger</groupId>
             <artifactId>swagger-annotations</artifactId>
             <version>${io.swagger.version}</version>
@@ -135,6 +140,10 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -182,6 +191,8 @@
                             <configOptions>
                                 <interfaceOnly>true</interfaceOnly>
                             </configOptions>
+                            <generateApis>true</generateApis>
+                            <generateApiDocumentation>true</generateApiDocumentation>
                         </configuration>
                     </execution>
                 </executions>
