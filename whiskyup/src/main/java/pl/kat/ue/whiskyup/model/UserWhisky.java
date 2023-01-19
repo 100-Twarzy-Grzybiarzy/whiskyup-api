@@ -31,11 +31,11 @@ public class UserWhisky {
     @Getter(onMethod = @__({@DynamoDbAttribute(AttributeNames.Whisky.NAME)}))
     private String name;
 
+    @Getter(onMethod = @__({@DynamoDbAttribute(AttributeNames.UserWhisky.THUMBNAIL_URL)}))
+    private String thumbnailUrl;
+
     @Getter(onMethod = @__({@DynamoDbAttribute(AttributeNames.Whisky.CATEGORY)}))
     private String category;
-
-    @Getter(onMethod = @__({@DynamoDbAttribute(AttributeNames.Whisky.DISTILLERY)}))
-    private String distillery;
 
     @Getter(onMethod = @__({@DynamoDbAttribute(AttributeNames.Whisky.BOTTLER)}))
     private String bottler;
@@ -63,9 +63,6 @@ public class UserWhisky {
 
     @Getter(onMethod = @__({@DynamoDbAttribute(AttributeNames.Whisky.RATING)}))
     private Double rating;
-
-    @Getter(onMethod = @__({@DynamoDbAttribute(AttributeNames.Whisky.USER_RATING)}))
-    private Double userRating;
 
     @Getter(onMethod = @__({@DynamoDbAttribute(AttributeNames.Whisky.PRICE)}))
     private Double price;

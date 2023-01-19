@@ -35,7 +35,7 @@ paths:
                   type: string
   /price-ranges:
     get:
-      summary: Get price ranges
+      summary: Get price rangesg
       operationId: getPriceRanges
       responses:
         '200':
@@ -115,7 +115,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/WhiskiesFindResult'
+                $ref: '#/components/schemas/UserWhiskiesFindResult'
   /user/{id}/whisky:
     post:
       summary: Add user whisky
@@ -130,14 +130,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Whisky'
+              $ref: '#/components/schemas/UserWhisky'
       responses:
         '200':
           description: ''
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Whisky'
+                $ref: '#/components/schemas/UserWhisky'
 components:
   schemas:
     WhiskiesFindResult:
@@ -149,6 +149,15 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Whisky"
+    UserWhiskiesFindResult:
+      type: object
+      properties:
+        pageCursor:
+          type: string
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserWhisky"
     UrlsFindResult:
       type: object
       properties:
@@ -231,19 +240,17 @@ components:
       properties:
         id:
           type: string
+        name:
+          type: string
         thumbnailUrl:
           type: string
         category:
-          type: string
-        distillery:
           type: string
         bottler:
           type: string
         bottlingSeries:
           type: string
         bottled:
-          type: string
-        brand:
           type: string
         vintage:
           type: integer
@@ -262,12 +269,6 @@ components:
         rating:
           type: number
           format: double
-        userRating:
-          type: number
-          format: double
-        amountOfRatings:
-          type: integer
-          format: int32
         price:
           type: number
           format: double

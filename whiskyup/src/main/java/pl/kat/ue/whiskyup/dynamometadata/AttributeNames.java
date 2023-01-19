@@ -29,6 +29,7 @@ public class AttributeNames {
 
         public final static String USER_ID = "UserId";
         public final static String WHISKY_ID = "WhiskyId";
+        public final static String THUMBNAIL_URL = "ThumbnailUrl";
     }
 
     public static class Whisky {
