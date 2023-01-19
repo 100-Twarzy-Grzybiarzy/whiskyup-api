@@ -2,6 +2,11 @@ server:
   port: 8080
 spring:
   application.name: whiskyup
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /docs
 jwt:
   secret:
     key: ${JWT_SECRET_KEY:mockSecretJwtKeyUsedWithHs512MustHaveSizeEqualOrGraterThan512BitsmockSecretJwtKeyUsedWithHs512MustHaveSizeEqualOrGraterThan512Bits}
